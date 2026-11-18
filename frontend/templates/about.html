@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macros %}
+{% block title %}About the Project · RxRevive{% endblock %}
+
+{% block content %}
+{{ macros.page_header('About the Project', 'An academic study of two NLP paradigms solving one recruitment problem — built by Team RxRevive for final-year evaluation.') }}
+
+<section class="section">
+  <div class="container about-grid">
+    <article class="glass-card about-card">
+      <h2>{{ macros.icon('spark') }} Project Overview</h2>
+      <p>RxRevive is an intelligent web-based system that analyzes candidate resumes and job descriptions using Natural Language Processing. It identifies relevant skills, measures compatibility, calculates matching scores and generates detailed suitability reports — through <strong>two independent NLP implementations</strong> of the same problem.</p>
+    </article>
+
+    <article class="glass-card about-card">
+      <h2>{{ macros.icon('doc') }} Common Problem Statement</h2>
+      <p class="quote">“Develop an intelligent web-based system that analyzes candidate resumes and job descriptions using Natural Language Processing (NLP) to identify relevant skills, measure compatibility, calculate matching scores, compare candidate profiles with job requirements and generate detailed suitability reports.”</p>
+    </article>
+
+    <article class="glass-card about-card">
+      <h2>{{ macros.icon('x') }} Existing System Limitations</h2>
+      <ul class="cross-list">
+        <li>{{ macros.icon('x') }} Manual resume screening is slow, subjective and inconsistent</li>
+        <li>{{ macros.icon('x') }} Keyword-only ATS filters miss qualified candidates who use different wording</li>
+        <li>{{ macros.icon('x') }} Candidates receive no feedback on <em>why</em> they don't match a role</li>
+        <li>{{ macros.icon('x') }} Single-method systems are never compared against alternatives</li>
+      </ul>
+    </article>
+
+    <article class="glass-card about-card">
+      <h2>{{ macros.icon('layers') }} Proposed System</h2>
+      <p>A unified platform where the <strong>same inputs</strong> flow through two engines:</p>
+      <ul class="check-list">
+        <li>{{ macros.icon('check') }} <strong>Traditional NLP</strong> — TF-IDF vectorization + cosine similarity (lexical)</li>
+        <li>{{ macros.icon('check') }} <strong>Transformer NLP</strong> — Sentence-BERT embeddings (semantic)</li>
+        <li>{{ macros.icon('check') }} Shared skill taxonomy, identical weighting and output schema for fair comparison</li>
+      </ul>
+    </article>
+
+    <article class="glass-card about-card">
+      <h2>{{ macros.icon('target') }} Project Objectives</h2>
+      <ol class="numbered-list">
+        <li>Automate resume–job compatibility analysis with explainable scores</li>
+        <li>Implement and contrast lexical vs semantic NLP on identical data</li>
+        <li>Provide matched/missing skill intelligence to candidates</li>
+        <li>Generate professional, downloadable suitability reports</li>
+        <li>Maintain rigorous honesty: no fabricated metrics, clear disclaimers</li>
+      </ol>
+    </article>
+
+    <article class="glass-card about-card">
+      <h2>{{ macros.icon('brain') }} Research Motivation &amp; NLP Technology</h2>
+      <p>Resume matching is a natural testbed for the lexical-vs-semantic question in NLP. TF-IDF represents the vector-space tradition — interpretable and cheap. Sentence-BERT represents modern transformer architectures — contextual, paraphrase-aware, heavier. Building both on one problem lets us quantify what semantic understanding actually buys.</p>
+    </article>
+
+    <article class="glass-card about-card">
+      <h2>{{ macros.icon('layers') }} System Architecture (summary)</h2>
+      <p>Flask application factory + blueprints · SQLAlchemy ORM over SQLite · two swappable NLP engines behind one schema · ReportLab PDF generation · Chart.js visualisation. The full diagram is on the <a class="inline-link" href="{{ url_for('main.architecture') }}">Architecture page</a>.</p>
+    </article>
+
+    <article class="glass-card about-card">
+      <h2>{{ macros.icon('check') }} Expected Outcomes</h2>
+      <ul class="check-list">
+        <li>{{ macros.icon('check') }} Demonstrable semantic advantage of SBERT on paraphrased content</li>
+        <li>{{ macros.icon('check') }} Quantified score differences across both engines on identical inputs</li>
+        <li>{{ macros.icon('check') }} A reusable evaluation pipeline for the labelled Resume-Job Fit dataset</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head"><h2>RxRevive Team</h2><p>Roles within Team RxRevive for this academic project. Individual names are added by the team on the presentation copy.</p></div>
+    <div class="feature-grid">
+      {{ macros.feature_card('brain', 'NLP Research', 'Engine design, skill taxonomy, evaluation methodology.') }}
+      {{ macros.feature_card('settings', 'Backend Engineering', 'Flask architecture, SQLAlchemy models, REST APIs, security.') }}
+      {{ macros.feature_card('chart', 'Frontend & UX', 'Design system, Chart.js dashboards, responsive layouts.') }}
+      {{ macros.feature_card('doc', 'Documentation', 'Report writing, viva preparation, dataset documentation.') }}
+    </div>
+  </div>
+</section>
+{% endblock %}

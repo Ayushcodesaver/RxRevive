@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macros %}
+{% block title %}Contact · RxRevive{% endblock %}
+
+{% block content %}
+{{ macros.page_header('Contact the Team', 'Questions, feedback or collaboration — send the RxRevive team a message. No personal contact details are invented here.') }}
+
+<section class="section">
+  <div class="container contact-grid">
+    <div class="glass-card contact-info">
+      <h2>{{ macros.icon('spark') }} About RxRevive</h2>
+      <p>RxRevive is an academic final-year project: an intelligent resume and job description matching system built to compare Traditional NLP (TF-IDF) and Transformer NLP (Sentence-BERT) on the same problem statement.</p>
+      <h2>{{ macros.icon('user') }} The team</h2>
+      <p><strong>Team RxRevive</strong> — NLP research, backend engineering, frontend &amp; UX, and documentation roles. Individual member details are documented in the project report and viva submission.</p>
+      <h2>{{ macros.icon('target') }} Project purpose</h2>
+      <p>This platform exists for learning, demonstration and academic evaluation. All match scores are educational suggestions — never automated hiring decisions. Messages sent here are stored in the project database for the team to review.</p>
+    </div>
+
+    <div class="glass-card contact-form-card">
+      <h2>{{ macros.icon('doc') }} Feedback &amp; contact form</h2>
+      <form id="contact-form" novalidate>
+        <div class="two-inputs">
+          <div>
+            <label class="field-label" for="contact-name">Name</label>
+            <input type="text" id="contact-name" maxlength="120" placeholder="Your name">
+          </div>
+          <div>
+            <label class="field-label" for="contact-email">Email</label>
+            <input type="email" id="contact-email" maxlength="255" placeholder="you@example.com">
+          </div>
+        </div>
+        <label class="field-label" for="contact-subject">Subject <span class="muted">(optional)</span></label>
+        <input type="text" id="contact-subject" maxlength="200" placeholder="Feedback, question, collaboration…">
+        <label class="field-label" for="contact-message">Message</label>
+        <textarea id="contact-message" rows="6" placeholder="Tell us what you think or ask a question…"></textarea>
+        <div class="form-actions">
+          <button class="btn accent" type="submit" id="contact-btn">{{ macros.icon('arrow') }} Send Message</button>
+          <p class="form-status" id="contact-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/contact.js') }}"></script>
+{% endblock %}

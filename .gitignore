@@ -1,0 +1,26 @@
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# instance data
+instance/
+*.db
+*.sqlite
+
+# generated artefacts
+generated_reports/*
+uploads/*
+!generated_reports/.gitkeep
+!uploads/.gitkeep
+
+# secret
+.secret_key
+
+# datasets (large files stay out of git)
+datasets/*
+!datasets/.gitkeep
+
+# model cache
+.model_cache/

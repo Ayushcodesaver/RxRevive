@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macros %}
+
+{% block content %}
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-glow hero-glow-1" aria-hidden="true"></div>
+  <div class="hero-glow hero-glow-2" aria-hidden="true"></div>
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <span class="hero-eyebrow">AI · Natural Language Processing · Recruitment Technology</span>
+      <h1>Your Resume. Their Requirements. <span class="grad-text">One Intelligent Match.</span></h1>
+      <p class="hero-sub">Unlock smarter career opportunities with AI-powered resume analysis and advanced Natural Language Processing.</p>
+      <div class="hero-actions">
+        <a class="btn accent" href="{{ url_for('analysis.analyze_page') }}">{{ macros.icon('upload') }} Analyze My Resume</a>
+        <a class="btn ghost-dark" href="{{ url_for('main.architecture') }}">{{ macros.icon('brain') }} Explore Our Technology</a>
+      </div>
+      <ul class="hero-points">
+        <li>{{ macros.icon('check') }} Two engines on one problem: TF-IDF and Sentence-BERT</li>
+        <li>{{ macros.icon('check') }} Matched &amp; missing skills, suitability reports, PDF export</li>
+        <li>{{ macros.icon('check') }} Fair, side-by-side model comparison</li>
+      </ul>
+    </div>
+
+    <!-- Signature: live sample matching visualisation (clearly labelled demo values) -->
+    <div class="hero-visual" aria-label="Sample matching score visualisation with demo values">
+      <div class="glass-card demo-visual">
+        <div class="demo-tag">Demo visualisation — illustrative values</div>
+        <div class="score-ring" id="hero-ring">
+          <svg viewBox="0 0 120 120" class="ring-svg" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" class="ring-bg"/>
+            <circle cx="60" cy="60" r="52" class="ring-fg" style="--target:78"/>
+          </svg>
+          <div class="ring-center">
+            <span class="ring-value">78%</span>
+            <span class="ring-label">Overall match</span>
+          </div>
+        </div>
+        <div class="demo-rows">
+          <div class="demo-row"><span class="demo-dot matched" aria-hidden="true"></span> Matched skills <strong>14</strong></div>
+          <div class="demo-row"><span class="demo-dot missing" aria-hidden="true"></span> Missing skills <strong>5</strong></div>
+          <div class="demo-row"><span class="demo-dot engine" aria-hidden="true"></span> Engines compared <strong>2</strong></div>
+        </div>
+        <div class="demo-bars">
+          <div class="demo-bar"><span>TF-IDF</span><div class="bar-track"><div class="bar-fill" style="--w:64%"></div></div><strong>64%</strong></div>
+          <div class="demo-bar"><span>SBERT</span><div class="bar-track"><div class="bar-fill accent-fill" style="--w:78%"></div></div><strong>78%</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ENGINES INTRO ============ -->
+<section class="section" id="engines">
+  <div class="container">
+    <div class="section-head">
+      <h2>Two NLP implementations. One problem statement.</h2>
+      <p>The same resume and job description are run through both engines — so every difference in their results is a real, explainable difference in method.</p>
+    </div>
+    <div class="two-col">
+      <article class="glass-card engine-card">
+        <div class="engine-head">
+          <span class="engine-icon">{{ macros.icon('scan') }}</span>
+          <h3>Traditional NLP</h3>
+        </div>
+        <p>TF-IDF vectorization weighs every term by importance; cosine similarity measures the angle between the resume and job description vectors. Fast, transparent and fully explainable — but lexical: it matches words, not meaning.</p>
+        <div class="chip-row">{{ macros.tech_chip('TF-IDF') }}{{ macros.tech_chip('Cosine Similarity') }}{{ macros.tech_chip('scikit-learn') }}{{ macros.tech_chip('Flask') }}</div>
+        <a class="text-link" href="{{ url_for('main.traditional') }}">Open the TF-IDF engine {{ macros.icon('arrow') }}</a>
+      </article>
+      <article class="glass-card engine-card">
+        <div class="engine-head">
+          <span class="engine-icon accent">{{ macros.icon('brain') }}</span>
+          <h3>Transformer NLP</h3>
+        </div>
+        <p>Sentence-BERT encodes both documents into dense semantic embeddings where <em>meaning</em> maps to position. Paraphrases and synonyms score as relevant even when they share no words — contextual understanding beyond keywords.</p>
+        <div class="chip-row">{{ macros.tech_chip('Sentence-BERT') }}{{ macros.tech_chip('all-MiniLM-L6-v2') }}{{ macros.tech_chip('PyTorch') }}{{ macros.tech_chip('Flask') }}</div>
+        <a class="text-link" href="{{ url_for('main.transformer') }}">Open the Transformer engine {{ macros.icon('arrow') }}</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="section section-alt" id="features">
+  <div class="container">
+    <div class="section-head">
+      <h2>Everything a candidate needs to understand a job fit</h2>
+      <p>From upload to downloadable suitability report — built with real NLP, not mocked results.</p>
+    </div>
+    <div class="feature-grid">
+      {{ macros.feature_card('doc', 'PDF & DOCX Upload', 'Drag-and-drop resumes in PDF, DOCX or TXT with validation, size limits and safe filename handling.') }}
+      {{ macros.feature_card('scan', 'Automatic Text Extraction', 'Text is extracted in memory and cleaned of whitespace and control characters — scanned files are detected and explained.') }}
+      {{ macros.feature_card('target', 'Matching Percentage', 'A weighted score combining document similarity and skill coverage, shown with a full breakdown.') }}
+      {{ macros.feature_card('check', 'Matched Skills', 'Every job-description skill found in the resume, grouped by category — technical and soft skills separated.') }}
+      {{ macros.feature_card('x', 'Missing Skills', 'The exact skills the job asks for that the resume does not mention — with actionable recommendations.') }}
+      {{ macros.feature_card('gauge', 'Suitability Verdict', 'Strong, Moderate, Partial or Weak fit — derived from the score with strengths and gaps spelled out.') }}
+      {{ macros.feature_card('chart', 'Match Visualisation', 'Score rings, doughnut charts and model bars drawn with Chart.js from your real analysis data.') }}
+      {{ macros.feature_card('download', 'PDF Report', 'A professionally formatted PDF suitability report generated with ReportLab, stored with your history.') }}
+      {{ macros.feature_card('scale', 'Model Comparison', 'Run both engines on identical inputs and see scores, timings and differences side by side.') }}
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS (summary) ============ -->
+<section class="section" id="how">
+  <div class="container">
+    <div class="section-head">
+      <h2>How RxRevive works</h2>
+      <p>Ten steps, from upload to report — the long version lives on the <a class="inline-link" href="{{ url_for('main.how_it_works') }}">How It Works page</a>.</p>
+    </div>
+    <ol class="flow-grid">
+      {{ macros.step_card(1, 'Upload Resume', 'PDF, DOCX or TXT — validated and parsed safely.') }}
+      {{ macros.step_card(2, 'Extract Text', 'In-memory extraction with cleaning and length guards.') }}
+      {{ macros.step_card(3, 'Enter Job Description', 'Paste the posting, add job title and company context.') }}
+      {{ macros.step_card(4, 'Preprocess', 'Normalisation, symbol handling, tokenisation, stop word removal.') }}
+      {{ macros.step_card(5, 'Extract Skills', 'A curated taxonomy of 150+ skills matched with word boundaries.') }}
+      {{ macros.step_card(6, 'Run the NLP Model', 'TF-IDF vectors or SBERT embeddings — or both for comparison.') }}
+      {{ macros.step_card(7, 'Calculate the Score', 'Similarity and skill coverage combined into one percentage.') }}
+      {{ macros.step_card(8, 'Compare Requirements', 'Experience and education alignment, strengths, gaps, recommendations.') }}
+      {{ macros.step_card(9, 'Generate Results', 'Interactive charts and a full suitability summary.') }}
+      {{ macros.step_card(10, 'Download the Report', 'One click produces your PDF analysis report.') }}
+    </ol>
+  </div>
+</section>
+
+<!-- ============ WHY RXREVIVE ============ -->
+<section class="section section-alt" id="why">
+  <div class="container">
+    <div class="section-head">
+      <h2>Why RxRevive</h2>
+      <p>Built as a rigorous academic study — the honest version of an AI match product.</p>
+    </div>
+    <div class="why-grid">
+      <article class="why-item">{{ macros.icon('shield') }}<div><h3>Transparent by design</h3><p>Every score ships with its formula, its weights and its limitation spelled out.</p></div></article>
+      <article class="why-item">{{ macros.icon('scale') }}<div><h3>Fair comparison</h3><p>Both engines receive identical inputs and the same taxonomy, so results are comparable.</p></div></article>
+      <article class="why-item">{{ macros.icon('settings') }}<div><h3>Real engineering</h3><p>Flask + SQLAlchemy + SQLite, secure uploads, hashed passwords, real PDF generation.</p></div></article>
+      <article class="why-item">{{ macros.icon('lock') }}<div><h3>Honest boundaries</h3><p>Scores are clearly labelled as suggestions — never as hiring decisions or probabilities.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATS (demo values, clearly labelled) ============ -->
+<section class="section" id="stats">
+  <div class="container">
+    <div class="glass-card stats-card">
+      <span class="demo-tag">Demo values — shown to illustrate the dashboard, not real usage statistics</span>
+      <div class="stats-row">
+        <div class="stat"><span class="stat-value">2</span><span class="stat-label">NLP engines implemented</span></div>
+        <div class="stat"><span class="stat-value">150+</span><span class="stat-label">Skills in the taxonomy</span></div>
+        <div class="stat"><span class="stat-value">15</span><span class="stat-label">Connected pages</span></div>
+        <div class="stat"><span class="stat-value">10</span><span class="stat-label">Pipeline steps</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="section cta-band">
+  <div class="container cta-inner">
+    <h2>See what your resume really says to a job description.</h2>
+    <div class="hero-actions">
+      <a class="btn accent" href="{{ url_for('analysis.analyze_page') }}">{{ macros.icon('upload') }} Analyze My Resume</a>
+      <a class="btn ghost-dark" href="{{ url_for('main.comparison') }}">{{ macros.icon('scale') }} Compare the Models</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Animate the hero ring + bars (demo visualisation)
+    var fg = document.querySelector('.ring-fg');
+    if (fg) requestAnimationFrame(function(){ fg.classList.add('animate'); });
+    document.querySelectorAll('.bar-fill').forEach(function (bar) {
+      requestAnimationFrame(function () { bar.classList.add('animate'); });
+    });
+  });
+</script>
+{% endblock %}

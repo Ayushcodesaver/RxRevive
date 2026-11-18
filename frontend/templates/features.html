@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macros %}
+{% block title %}Features · RxRevive{% endblock %}
+
+{% block content %}
+{{ macros.page_header('Features', 'Everything the platform does — each feature is a real, working implementation, not a mockup.') }}
+
+<section class="section">
+  <div class="container">
+    <div class="feature-grid">
+      {{ macros.feature_card('upload', 'Resume PDF Upload', 'Secure PDF upload with extension and content-sniff validation, 8 MB limit and safe filenames.') }}
+      {{ macros.feature_card('upload', 'Resume DOCX Upload', 'DOCX paragraphs and tables are parsed with python-docx, entirely in memory.') }}
+      {{ macros.feature_card('scan', 'Automatic Text Extraction', 'pypdf/python-docx extraction with whitespace cleaning, control-character removal and scanned-file detection.') }}
+      {{ macros.feature_card('doc', 'Job Description Processing', 'Paste the posting with job title and optional company; empty or too-short inputs are rejected with clear messages.') }}
+      {{ macros.feature_card('target', 'Skill Extraction', 'A curated taxonomy of 150+ skills across 8 categories matched with word-boundary regex (handles C++, C#, .NET).') }}
+      {{ macros.feature_card('gauge', 'Compatibility Analysis', 'Document similarity and skill coverage combined 60/40 into a single explainable match score.') }}
+      {{ macros.feature_card('chart', 'Matching Percentage', 'Shown with a score ring, progress bars and a full formula breakdown — nothing hidden.') }}
+      {{ macros.feature_card('check', 'Matched Skills', 'Every JD skill found in the resume, grouped by category and split technical vs soft.') }}
+      {{ macros.feature_card('x', 'Missing Skills', 'The precise gaps, each with actionable recommendations (projects, coursework, certifications).') }}
+      {{ macros.feature_card('clock', 'Experience Comparison', 'Stated years of experience in the resume are compared with the JD requirement and flagged as match or gap.') }}
+      {{ macros.feature_card('doc', 'Education Comparison', 'Highest detected degree level (diploma → doctorate) compared against the job requirement.') }}
+      {{ macros.feature_card('spark', 'Suitability Report', 'Strong / Moderate / Partial / Weak verdict with strengths, gaps and improvement recommendations.') }}
+      {{ macros.feature_card('download', 'PDF Report Generation', 'Professionally formatted PDF via ReportLab, stored with your history and re-downloadable anytime.') }}
+      {{ macros.feature_card('scale', 'Traditional vs Transformer', 'Comparison mode runs both engines on identical inputs — scores, timings and differences side by side.') }}
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head"><h2>Experience them live</h2></div>
+    <div class="hero-actions center">
+      <a class="btn accent" href="{{ url_for('analysis.analyze_page') }}">{{ macros.icon('upload') }} Analyze a Resume</a>
+      <a class="btn ghost-dark" href="{{ url_for('main.comparison') }}">{{ macros.icon('scale') }} Compare Models</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

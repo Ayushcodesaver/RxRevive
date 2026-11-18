@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macros %}
+{% block title %}Analysis Results · RxRevive{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-title">Analysis Results</h1>
+    <p class="page-subtitle">
+      {% if analysis.job_title %}{{ analysis.job_title }}{% if analysis.company %} · {{ analysis.company }}{% endif %} — {% endif %}
+      analyzed {{ analysis.created_at.strftime('%d %b %Y, %H:%M UTC') }} ·
+      Model: <strong>{{ {'traditional': 'Traditional NLP', 'transformer': 'Transformer NLP', 'compare': 'Comparison (both engines)'}[analysis.model_name] }}</strong>
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    {% if analysis.model_name == 'compare' %}
+    <div class="score-duo">
+      {% for key, label, cls in [('traditional', 'Traditional NLP · TF-IDF', 'trad'), ('transformer', 'Transformer NLP · SBERT', 'trans')] %}
+        {% set res = payload.get(key) %}
+        {% if res %}
+        <div class="glass-card score-panel {{ cls }}">
+          <h3>{{ label }}</h3>
+          <div class="score-ring small-ring">
+            <svg viewBox="0 0 120 120" class="ring-svg" aria-hidden="true">
+              <circle cx="60" cy="60" r="52" class="ring-bg"/>
+              <circle cx="60" cy="60" r="52" class="ring-fg {{ cls }}" style="--target:{{ res.match_percentage }}"/>
+            </svg>
+            <div class="ring-center">
+              <span class="ring-value">{{ res.match_percentage }}%</span>
+              <span class="ring-label">{{ res.suitability.label }}</span>
+            </div>
+          </div>
+          <dl class="breakdown">
+            <div class="breakdown-row"><dt>{{ res.cosine_label }}</dt><dd>{{ res.cosine_percentage }}%</dd></div>
+            <div class="breakdown-row"><dt>Skill coverage</dt><dd>{{ res.skill_percentage }}%</dd></div>
+            <div class="breakdown-row"><dt>Processing time</dt><dd>{{ res.processing_time }}s</dd></div>
+          </dl>
+          <button class="btn ghost small jump-btn" data-target="panel-{{ key }}">Skill analysis ↓</button>
+        </div>
+        {% endif %}
+      {% endfor %}
+      {% if payload.get('traditional') and payload.get('transformer') %}
+      <div class="glass-card diff-panel">
+        <h3>Difference</h3>
+        {% set diff = payload.transformer.match_percentage - payload.traditional.match_percentage %}
+        <p class="diff-value {{ 'pos' if diff > 0 else ('neg' if diff < 0 else '') }}">{{ '%+d'|format(diff) }} pts</p>
+        <p class="muted small">Transformer − Traditional on identical inputs. The scores are not calibrated probabilities and are not directly interchangeable.</p>
+      </div>
+      {% endif %}
+      {% if payload.get('error_note') %}
+        <p class="form-status error">{{ payload.error_note }}</p>
+      {% endif %}
+    </div>
+    {% else %}
+      {% set res = payload.get('transformer') or payload.get('traditional') %}
+      {% if res %}
+      <div class="glass-card single-score">
+        <div class="score-ring" id="main-ring">
+          <svg viewBox="0 0 120 120" class="ring-svg" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" class="ring-bg"/>
+            <circle cx="60" cy="60" r="52" class="ring-fg" style="--target:{{ res.match_percentage }}"/>
+          </svg>
+          <div class="ring-center">
+            <span class="ring-value">{{ res.match_percentage }}%</span>
+            <span class="ring-label">Overall match</span>
+          </div>
+        </div>
+        <div class="single-score-side">
+          <span class="status-badge {{ 'ok' if res.match_percentage >= 50 else 'warn' }}">{{ res.suitability.label }}</span>
+          <dl class="breakdown">
+            <div class="breakdown-row"><dt>{{ res.cosine_label }}</dt><dd>{{ res.cosine_percentage }}%</dd></div>
+            <div class="breakdown-row"><dt>Skill coverage</dt><dd>{{ res.skill_percentage }}%</dd></div>
+            <div class="breakdown-row"><dt>Processing time</dt><dd>{{ res.processing_time }}s</dd></div>
+          </dl>
+        </div>
+      </div>
+      {% endif %}
+    {% endif %}
+
+    <div class="charts-row">
+      <div class="glass-card chart-card">
+        <h3>Matched vs missing skills</h3>
+        <canvas id="skills-doughnut" height="220"></canvas>
+      </div>
+      <div class="glass-card chart-card">
+        <h3>Requirement breakdown</h3>
+        <canvas id="breakdown-bars" height="220"></canvas>
+      </div>
+    </div>
+
+    {% for key, label, panel_cls in [('traditional', 'Traditional NLP · TF-IDF analysis', 'panel-traditional'), ('transformer', 'Transformer NLP · SBERT analysis', 'panel-transformer')] %}
+      {% set res = payload.get(key) %}
+      {% if res %}
+      <div class="glass-card results-panel {{ panel_cls }}" id="panel-{{ key }}">
+        <h2 class="card-title">{{ macros.icon('target') }} {{ label }}</h2>
+        {% if analysis.model_name == 'compare' and payload.get('traditional') and payload.get('transformer') %}
+        <p class="muted small">Skill sets below are identical in both panels when the same taxonomy matches — the difference lives in the similarity component.</p>
+        {% endif %}
+
+        <div class="results-grid-2">
+          <div>
+            <h3 class="sub-title">{{ macros.icon('check') }} Matched skills <span class="count-pill">{{ res.matched_skills|length }}</span></h3>
+            {% if res.matched_by_category %}
+              {% for category, skills in res.matched_by_category.items() %}
+              <p class="skill-category">{{ category }}</p>
+              <div class="chip-row">
+                {% for skill in skills %}<span class="chip matched">{{ skill }}</span>{% endfor %}
+              </div>
+              {% endfor %}
+            {% else %}
+              <p class="muted">No taxonomy skills matched.</p>
+            {% endif %}
+            <h3 class="sub-title">{{ macros.icon('x') }} Missing skills <span class="count-pill warn">{{ res.missing_skills|length }}</span></h3>
+            {% if res.missing_skills %}
+            <div class="chip-row">{% for skill in res.missing_skills %}<span class="chip missing">{{ skill }}</span>{% endfor %}</div>
+            {% else %}
+            <p class="muted">The resume covers every identified job description skill.</p>
+            {% endif %}
+          </div>
+          <div>
+            <h3 class="sub-title">{{ macros.icon('spark') }} Candidate strengths</h3>
+            <ul class="point-list">{% for s in res.strengths %}<li>{{ s }}</li>{% endfor %}</ul>
+            <h3 class="sub-title">{{ macros.icon('arrow') }} Improvement recommendations</h3>
+            <ul class="point-list">{% for s in res.recommendations %}<li>{{ s }}</li>{% endfor %}</ul>
+            <h3 class="sub-title">{{ macros.icon('clock') }} Experience &amp; education alignment</h3>
+            <ul class="point-list">
+              <li>{{ res.experience_alignment.message }} <span class="align-tag {{ res.experience_alignment.status }}">{{ res.experience_alignment.status }}</span></li>
+              <li>{{ res.education_alignment.message }} <span class="align-tag {{ res.education_alignment.status }}">{{ res.education_alignment.status }}</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <details class="engine-details">
+          <summary>{{ macros.icon('settings') }} Technical details — {{ label }}</summary>
+          <ul class="detail-list">{% for d in res.details %}<li>{{ d }}</li>{% endfor %}</ul>
+        </details>
+      </div>
+      {% endif %}
+    {% endfor %}
+
+    <div class="glass-card disclaimer-card">
+      <h2>{{ macros.icon('lock') }} Important disclaimer</h2>
+      <p>{{ (payload.get('transformer') or payload.get('traditional') or {}).get('disclaimer', 'A similarity score is not a guaranteed probability of employment or an objective hiring decision.') }}</p>
+    </div>
+
+    <div class="hero-actions center">
+      <a class="btn accent" href="{{ url_for('reports.download_report_pdf', analysis_id=analysis.id) }}">{{ macros.icon('download') }} Download PDF Report</a>
+      <a class="btn ghost-dark" href="{{ url_for('reports.reports_page') }}">View All Reports</a>
+      <a class="btn ghost-dark" href="{{ url_for('analysis.analyze_page') }}">New Analysis</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Animate all score rings on this page
+    document.querySelectorAll('.ring-fg').forEach(function (ring) { ring.classList.add('animate'); });
+
+    // Charts from server-rendered data
+    var matched = {{ (payload.get('transformer') or payload.get('traditional') or {}).get('matched_skills', []) | length }};
+    var missing = {{ (payload.get('transformer') or payload.get('traditional') or {}).get('missing_skills', []) | length }};
+    if (window.RxCharts) {
+      RxCharts.doughnut('skills-doughnut', ['Matched skills', 'Missing skills'], [matched, missing]);
+      var res = {{ (payload.get('transformer') or payload.get('traditional') or {}) | tojson }};
+      if (res.cosine_percentage !== undefined) {
+        RxCharts.bars('breakdown-bars', {
+          labels: ['Similarity', 'Skill coverage', 'Final score'],
+          datasets: [{ label: 'Percentage', data: [res.cosine_percentage, res.skill_percentage, res.match_percentage], backgroundColor: ['#22d3ee', '#14b8a6', '#f59e0b'] }]
+        });
+      }
+    }
+    document.querySelectorAll('.jump-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var el = document.getElementById(btn.dataset.target);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  });
+</script>
+{% endblock %}

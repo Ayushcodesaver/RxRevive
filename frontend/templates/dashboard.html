@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macros %}
+{% block title %}Dashboard · RxRevive{% endblock %}
+
+{% block content %}
+{{ macros.page_header('User Dashboard', 'Your analysis history, performance trends and quick actions. Metrics come from your real stored analyses.') }}
+
+<section class="section">
+  <div class="container">
+    <div class="stats-cards" id="stats-cards">
+      <div class="glass-card stat-card"><span class="stat-icon">{{ macros.icon('doc') }}</span><span class="stat-value" id="stat-total">—</span><span class="stat-label">Total resume analyses</span></div>
+      <div class="glass-card stat-card"><span class="stat-icon">{{ macros.icon('gauge') }}</span><span class="stat-value" id="stat-avg">—</span><span class="stat-label">Average matching score</span></div>
+      <div class="glass-card stat-card"><span class="stat-icon">{{ macros.icon('scan') }}</span><span class="stat-value" id="stat-trad">—</span><span class="stat-label">Traditional NLP usage</span></div>
+      <div class="glass-card stat-card"><span class="stat-icon">{{ macros.icon('brain') }}</span><span class="stat-value" id="stat-trans">—</span><span class="stat-label">Transformer NLP usage</span></div>
+    </div>
+
+    <div class="charts-row">
+      <div class="glass-card chart-card">
+        <h3>Engine usage</h3>
+        <canvas id="usage-doughnut" height="220"></canvas>
+      </div>
+      <div class="glass-card chart-card">
+        <h3>Matching performance over time</h3>
+        <canvas id="performance-chart" height="220"></canvas>
+      </div>
+      <div class="glass-card chart-card">
+        <h3>Score distribution</h3>
+        <canvas id="distribution-chart" height="220"></canvas>
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <div class="section-head-row">
+        <h3>Quick actions</h3>
+      </div>
+      <div class="quick-actions">
+        <a class="btn accent" href="{{ url_for('analysis.analyze_page') }}">{{ macros.icon('upload') }} Analyze New Resume</a>
+        <a class="btn ghost-dark" href="{{ url_for('main.traditional') }}">{{ macros.icon('scan') }} Traditional NLP</a>
+        <a class="btn ghost-dark" href="{{ url_for('main.transformer') }}">{{ macros.icon('brain') }} Transformer NLP</a>
+        <a class="btn ghost-dark" href="{{ url_for('main.comparison') }}">{{ macros.icon('scale') }} Compare Models</a>
+        <a class="btn ghost-dark" href="{{ url_for('reports.reports_page') }}">{{ macros.icon('doc') }} View Reports</a>
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <h3>Recent analyses &amp; reports</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Date</th><th>Job title</th><th>Company</th><th>Model</th><th>Score(s)</th><th></th></tr></thead>
+          <tbody id="recent-rows"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="muted small" id="no-recent" hidden>No analyses yet. Your activity history will appear here — start with the <a class="inline-link" href="{{ url_for('analysis.analyze_page') }}">analyze page</a>.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

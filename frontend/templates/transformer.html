@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macros %}
+{% block title %}Transformer NLP · Sentence-BERT Semantic Matching · RxRevive{% endblock %}
+
+{% block content %}
+{{ macros.page_header('Advanced AI – Sentence-BERT Semantic Matching', 'This module uses transformer-based semantic embeddings to understand contextual relationships between resume content and job requirements.') }}
+
+<section class="section">
+  <div class="container">
+    <div class="two-col">
+      <article class="glass-card">
+        <h2 class="card-title">{{ macros.icon('brain') }} How this engine works</h2>
+        <ol class="numbered-list">
+          <li>Extract and preprocess both documents.</li>
+          <li>Encode each document with <strong>all-MiniLM-L6-v2</strong> into dense 384-dimensional embeddings.</li>
+          <li>Calculate semantic cosine similarity between the embedding vectors.</li>
+          <li>Extract skills with the same curated taxonomy as the traditional engine.</li>
+          <li>Identify matched, missing and contextually relevant skills.</li>
+          <li>Combine semantic similarity (60%) and skill coverage (40%) into the match score.</li>
+          <li>Generate the semantic analysis report.</li>
+        </ol>
+        <div class="chip-row">
+          {{ macros.tech_chip('Python') }}{{ macros.tech_chip('Flask') }}{{ macros.tech_chip('Sentence-BERT') }}
+          {{ macros.tech_chip('Transformers') }}{{ macros.tech_chip('PyTorch') }}{{ macros.tech_chip('Cosine Similarity') }}
+        </div>
+      </article>
+      <article class="glass-card">
+        <h2 class="card-title">{{ macros.icon('settings') }} Model status &amp; loading</h2>
+        {% if sbert_state == 'ready' %}
+          {{ macros.status_badge('ok', 'Model loaded and ready') }}
+        {% elif sbert_state == 'unavailable' %}
+          {{ macros.status_badge('error', 'Model unavailable') }}
+        {% else %}
+          {{ macros.status_badge('info', 'Model loads on first use') }}
+        {% endif %}
+        <p class="muted">{{ sbert_message }}</p>
+        <h2 class="card-title">{{ macros.icon('check') }} What it measures well</h2>
+        <ul class="check-list">
+          <li>{{ macros.icon('check') }} Meaning-level similarity across different wording</li>
+          <li>{{ macros.icon('check') }} Contextual understanding of experience descriptions</li>
+          <li>{{ macros.icon('check') }} Paraphrase-tolerant matching that TF-IDF cannot do</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head"><h2>Run the Transformer engine</h2><p>Results are computed live by the real Sentence-BERT model — no fabricated values.</p></div>
+    {% set model_key = 'transformer' %}
+    {% include '_analyzer.html' %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/analyzer.js') }}"></script>
+{% endblock %}
