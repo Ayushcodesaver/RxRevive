@@ -1,0 +1,17 @@
+{
+  "name": "rxrevive-monorepo",
+  "private": true,
+  "version": "2.0.0",
+  "description": "RxRevive: Next.js + Clerk + Convex + FastAPI resume matching platform",
+  "scripts": {
+    "convex:dev": "convex dev",
+    "convex:deploy": "convex deploy",
+    "web": "npm run dev --prefix web",
+    "web:build": "npm run build --prefix web",
+    "api": "python -m uvicorn app.main:app --app-dir ai-backend --port 8000",
+    "api:test": "python -m pytest ai-backend/tests/ -q"
+  },
+  "dependencies": {
+    "convex": "^1.51.0"
+  }
+}
