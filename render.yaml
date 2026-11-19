@@ -1,0 +1,30 @@
+# Render Blueprint for the RxRevive AI service (FastAPI + PyTorch + SBERT).
+#
+# One-click deploy: push this repo to GitHub, then on dashboard.render.com
+# choose "New" -> "Blueprint" -> select this repository -> Apply.
+#
+# Note: the free plan has 512 MB RAM — the Sentence-BERT model wants more.
+# If the service OOMs on model load, switch the plan to starter (2 GB) or
+# point MODEL_DEVICE at a smaller quantised model.
+
+services:
+  - type: web
+    name: rxrevive-ai
+    runtime: docker
+    dockerfilePath: ./ai-backend/Dockerfile
+    dockerContext: ./ai-backend
+    plan: free
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: AUTH_DISABLED
+        value: "false"
+      - key: PYTHON_API_SECRET
+        sync: false          # set in the dashboard: same value as Vercel's PYTHON_API_SECRET
+      - key: CLERK_JWT_ISSUER_DOMAIN
+        sync: false          # e.g. https://expert-hedgehog-4129.clerk.accounts.dev
+      - key: MODEL_NAME
+        value: sentence-transformers/all-MiniLM-L6-v2
+      - key: MODEL_DEVICE
+        value: cpu
+      - key: GENERATED_REPORTS_DIR
+        value: /tmp/generated_reports   # ephemeral on free plans; object storage for production

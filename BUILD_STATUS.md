@@ -109,3 +109,60 @@ npm run dev                      # http://localhost:3000
 # 3. Docker (both services)
 docker compose up --build
 ```
+
+
+---
+
+## Deployment runbook
+
+### Web (Vercel)
+
+Everything is prepared (`web/vercel.json`, standalone only for Docker). Two options:
+
+**Option A — dashboard (no CLI):**
+1. Push the repo to GitHub (done).
+2. On vercel.com: **Add New Project → Import** `Ayushcodesaver/RxRevive`.
+3. Set **Root Directory** to `web`.
+4. Environment variables (Production + Preview):
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` = your pk_test key
+   - `CLERK_SECRET_KEY` = your sk_test key
+   - `NEXT_PUBLIC_CONVEX_URL` = https://polite-caiman-100.convex.cloud
+   - `PYTHON_API_URL` = the Render service URL (step below)
+   - `PYTHON_API_SECRET` = the same secret the backend has
+5. Deploy. Every git push to main now auto-deploys.
+
+**Option B — CLI:**
+```powershell
+npx.cmd vercel login          # one browser click
+npx.cmd vercel link           # from web/ (accept defaults)
+npx.cmd vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY production
+npx.cmd vercel env add CLERK_SECRET_KEY production
+npx.cmd vercel env add NEXT_PUBLIC_CONVEX_URL production
+npx.cmd vercel env add PYTHON_API_URL production
+npx.cmd vercel env add PYTHON_API_SECRET production
+npx.cmd vercel --prod
+```
+
+### AI service (Render — the ML model needs a long-running host, not serverless)
+
+1. On dashboard.render.com: **New → Blueprint** → select this repository → **Apply**.
+   Render reads `render.yaml`, builds `ai-backend/Dockerfile` (model weights
+   pre-download during the image build) and starts the service.
+2. Set the two `sync: false` env vars in the Render dashboard:
+   `PYTHON_API_SECRET` (same value as Vercel) and `CLERK_JWT_ISSUER_DOMAIN`.
+3. Copy the service URL (e.g. `https://rxrevive-ai.onrender.com`) into the
+   Vercel env var `PYTHON_API_URL`.
+
+### Clerk on the deployed domain
+
+Development instances work on any domain, so the first deploy runs as-is.
+Before real users: activate the instance in the Clerk dashboard and swap to
+production keys (`pk_live_`/`sk_live_`) in Vercel + the issuer domain in Render.
+
+### Known deploy constraints
+
+- Render free plan: 512 MB RAM — SBERT can OOM on model load; starter (2 GB)
+  is the reliable tier. The model download happens at Docker build time.
+- `generated_reports` on free Render plans is ephemeral per deploy; object
+  storage (`OBJECT_STORAGE_*`) is the durable answer.
+- Cold start after inactivity: first request loads the model (~10 s+).

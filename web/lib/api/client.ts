@@ -96,7 +96,8 @@ export async function fetchModelStatus(): Promise<Envelope<{
   transformer_message: string; model_name: string;
   auth_mode: string; background_tasks: string;
 }>> {
-  const response = await fetch(`${config.apiUrl}/api/v1/health`, { cache: "no-store" });
+  // proxied through the Next API route: no cross-origin dependency on the AI host
+  const response = await fetch("/api/models/status", { cache: "no-store" });
   return unwrap(response);
 }
 

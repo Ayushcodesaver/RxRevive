@@ -31,9 +31,12 @@ def create_app() -> FastAPI:
         ),
     )
 
+    import os
+    allowed = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
+    origins = [o.strip() for o in allowed.split(",") if o.strip()]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["GET", "POST"],
         allow_headers=["Authorization", "Content-Type", "X-API-Secret", "X-User-Id"],
