@@ -24,3 +24,37 @@ datasets/*
 
 # model cache
 .model_cache/
+
+# ============================================================
+# monorepo (web/, ai-backend/, convex/)
+# ============================================================
+
+# secrets and env files — never commit
+.env
+.env.*
+!.env.example
+web/.env*.local
+web/.env
+ai-backend/.env
+
+# node / next build artefacts
+node_modules/
+web/node_modules/
+web/.next/
+web/out/
+*.tsbuildinfo
+.vercel/
+
+# python tooling (backend)
+.pytest_cache/
+*.egg-info/
+
+# hallmark render artefacts (screenshots stay local)
+.hallmark/shots/
+.hallmark/before/
+.hallmark/final-shots/
+.hallmark/next-shots/
+frontend/templates/.hallmark/
+
+# large capture sources stay out of git history
+frontend/static/images/hero-pen-original.jpg

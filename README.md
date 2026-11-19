@@ -1,22 +1,55 @@
 # RxRevive — Intelligent Resume and Job Description Matching System
 
-A complete full-stack web application that analyzes candidate resumes and job
-descriptions using Natural Language Processing, with **two independent engines**
-solving the same problem for a fair comparison:
+> **Monorepo (current):** Next.js 16 + Clerk + Convex + Python FastAPI — see [BUILD_STATUS.md](BUILD_STATUS.md) for the exact per-module state and setup steps.
+> **Legacy (still runnable):** the original Flask application (`python run.py`) — kept untouched as the reference implementation.
+
+Two independent NLP engines score a resume against a job description on identical inputs:
 
 | | Traditional NLP | Transformer NLP |
 |---|---|---|
 | Technique | TF-IDF vectorization | Sentence-BERT (`all-MiniLM-L6-v2`) |
 | Similarity | Cosine similarity on term vectors | Cosine similarity on 384-dim semantic embeddings |
 | Understands synonyms | No (lexical) | Yes (semantic) |
-| Speed | Milliseconds | Slower (model inference) |
 
-Both engines share the same skill taxonomy (150+ skills, 8 categories), the same
-weighting (60% similarity + 40% skill coverage) and the same result schema — so
-running "Compare Both Models" on identical inputs produces directly comparable
-scores, timings and skill analyses.
+Both engines share one skill taxonomy (150+ skills, 10 categories) and one weighting
+(60% similarity + 40% skill coverage), so their results are directly comparable.
 
-## Quick start
+---
+
+## Monorepo quick start
+
+```bash
+# 1. Python AI service (all NLP computation)
+cd ai-backend
+pip install -r requirements.txt
+python -m pytest tests/               # 42 tests
+uvicorn app.main:app --port 8000      # http://127.0.0.1:8000/docs
+
+# 2. Web app (Next.js, the Ink design)
+cd ../web
+npm install
+cp ../.env.example .env.local         # fill Clerk/Convex keys when ready
+npm run dev                           # http://localhost:3000
+
+# 3. Or everything in Docker
+docker compose up --build
+```
+
+## Structure
+
+```
+web/          Next.js 16 App Router (TypeScript, Tailwind, the Ink design)
+  app/(marketing)/   10 public pages
+  app/(auth)/        Clerk sign-in / sign-up
+  app/(dashboard)/   10 authenticated pages
+  app/api/           server routes: analyze, extract, contact, datasets, evaluation, reports
+convex/       schema + functions (users, analyses, datasets, evaluations, experiments, contacts)
+ai-backend/   FastAPI service (both NLP engines, evaluation, metrics, ReportLab PDFs)
+datasets/     labelled CSV datasets for research evaluation
+```
+
+## Legacy Flask app (reference implementation)
+
 
 ```bash
 cd RxRevive
