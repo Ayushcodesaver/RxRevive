@@ -40,6 +40,7 @@ ai-backend/.env
 # node / next build artefacts
 node_modules/
 web/node_modules/
+.next/
 web/.next/
 web/out/
 *.tsbuildinfo
