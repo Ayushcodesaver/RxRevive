@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // standalone only for Docker builds (Dockerfile sets DOCKER_BUILD=1);
+  // plain `next start` is the supported local mode
+  output: process.env.DOCKER_BUILD ? "standalone" : undefined,
   /* config options here */
   cacheComponents: false,
   partialPrefetching: false,
