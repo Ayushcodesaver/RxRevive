@@ -9,7 +9,7 @@
 
 import Link from "next/link";
 import { Menu } from "lucide-react";
-import { SignedIn, UserButton } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { config } from "@/lib/config";
 
@@ -90,10 +90,8 @@ export function SiteHeader() {
           ))}
 
           <div className="nav-auth">
-            {config.clerkConfigured && mounted ? (
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
+            {config.clerkConfigured ? (
+              <NavAuthClerk mounted={mounted} onNavigate={() => setOpen(false)} />
             ) : (
               <>
                 <Link className="nav-link" href="/sign-in" onClick={() => setOpen(false)}>
@@ -112,5 +110,25 @@ export function SiteHeader() {
         </Link>
       </div>
     </header>
+  );
+}
+
+/** Clerk-aware auth area: useUser() is the Core-3 supported API.
+ * Renders the plain links until hydration, then swaps in the UserButton. */
+function NavAuthClerk({ mounted, onNavigate }: { mounted: boolean; onNavigate: () => void }) {
+  const { isSignedIn, isLoaded } = useUser();
+  if (!mounted || !isLoaded) {
+    return (
+      <>
+        <Link className="nav-link" href="/sign-in" onClick={onNavigate}>Log in</Link>
+        <Link className="btn quiet small" href="/sign-up" onClick={onNavigate}>Sign up</Link>
+      </>
+    );
+  }
+  return isSignedIn ? <UserButton /> : (
+    <>
+      <Link className="nav-link" href="/sign-in" onClick={onNavigate}>Log in</Link>
+      <Link className="btn quiet small" href="/sign-up" onClick={onNavigate}>Sign up</Link>
+    </>
   );
 }

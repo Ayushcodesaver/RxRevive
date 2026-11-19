@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: path.resolve(__dirname),
   // standalone only for Docker builds (Dockerfile sets DOCKER_BUILD=1);
   // plain `next start` is the supported local mode
   output: process.env.DOCKER_BUILD ? "standalone" : undefined,
