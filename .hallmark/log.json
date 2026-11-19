@@ -1,0 +1,33 @@
+[
+ {
+  "shape": "Split Studio",
+  "theme": "ink",
+  "axes": "light/grotesk-sans/chromatic-teal",
+  "hero": "Poster (/), Ledge (auth), Banner (inner)",
+  "nav": "edge-aligned bar, three dropdown groups",
+  "footer": "mast with photo credits",
+  "imagery": "product element-captures (7), library photographs 2 (muted), pen hero",
+  "photos": [
+   "Fountain_pen_writing_(literacy)",
+   "Olympia_Simplex",
+   "Interior_of_Cantys_Bookshop_July_2022"
+  ],
+  "signature": "the match list: ruled skills with In/Out state pills from a real stored run",
+  "sections": "Hero Poster, analyzer showcase, engine switcher, match list, needs rows, split close, band close",
+  "entry": "full redesign of RxRevive (17 templates) into Ink: white paper, hueless black, Epilogue, hairlines, one teal that means in",
+  "mode": "redesign",
+  "depth": "full",
+  "scope": "site",
+  "fingerprint": "split-studio:poster:switcher:ruled-list:band-close",
+  "waived": [
+   "22",
+   "39b",
+   "F25",
+   "85"
+  ],
+  "prompt": "A resume and job-description matching tool: upload a resume, paste a job description, get a match score from two NLP engines and compare them side by side",
+  "draw": "b23cee",
+  "deal": "3/3",
+  "date": "2026-11-19"
+ }
+]

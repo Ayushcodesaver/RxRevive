@@ -20,7 +20,7 @@ DATASET_OPTIONS = [
         "format": "CSV / Hugging Face dataset",
         "features": "Resume text, job description, fit label (Good Fit / Potential Fit / No Fit)",
         "splits": "Training and testing splits provided",
-        "role": "Primary dataset — label-supervised evaluation of both engines",
+        "role": "Primary dataset: label-supervised evaluation",
         "link": None,  # verified source link intentionally left blank; add after verification
     },
     {
@@ -28,7 +28,7 @@ DATASET_OPTIONS = [
         "size_label": "~29,040 pairs (synthetic)",
         "format": "CSV",
         "features": "1,320 resumes, 1,320 job descriptions, positive/negative matching labels",
-        "splits": "Single split — construct your own train/test split",
+        "splits": "Single split: construct your own train/test split",
         "role": "Alternative for pair-matching experiments",
         "link": None,
     },
@@ -37,7 +37,7 @@ DATASET_OPTIONS = [
         "size_label": "~1,031 samples",
         "format": "CSV",
         "features": "Matched and mismatched resumes, matching scores, skill alignment information",
-        "splits": "Single split — construct your own train/test split",
+        "splits": "Single split: construct your own train/test split",
         "role": "Small-scale sanity checks and manual inspection",
         "link": None,
     },
@@ -46,7 +46,7 @@ DATASET_OPTIONS = [
         "size_label": "~22,465 profile-job pairs",
         "format": "CSV",
         "features": "2,500 Indian job postings, 640 candidate profiles, skills/experience/domain match scores",
-        "splits": "Single split — construct your own train/test split",
+        "splits": "Single split: construct your own train/test split",
         "role": "Regional (India) generalisation testing",
         "link": None,
     },
@@ -104,7 +104,7 @@ def api_contact():
     db.session.add(ContactMessage(name=name, email=email,
                                   subject=subject or "Feedback", message=message))
     db.session.commit()
-    return ok({"message": "Thank you — your message has been received by the RxRevive team."})
+    return ok({"message": "Thank you; your message has been received by the RxRevive team."})
 
 
 @bp.post("/api/dataset/upload")
@@ -141,6 +141,6 @@ def api_dataset_upload():
         "message": f"Dataset '{safe_name}' stored for research experiments.",
         "columns": header[:30],
         "rows": row_count,
-        "note": "Label-supervised evaluation (precision, recall, F1) is not configured yet — "
+        "note": "Label-supervised evaluation (precision, recall, F1) is not configured yet; "
                 "connect a labelled dataset in Phase 6 to enable it.",
     })

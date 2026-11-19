@@ -3,37 +3,34 @@
 {% block title %}Traditional NLP · TF-IDF Resume Matching · RxRevive{% endblock %}
 
 {% block content %}
-{{ macros.page_header('Traditional NLP – TF-IDF Resume Matching', 'This module uses traditional Natural Language Processing techniques to calculate resume–job similarity using TF-IDF vectorization and cosine similarity.') }}
+{{ macros.page_header('Traditional NLP: TF-IDF Resume Matching', 'Resume to job similarity with TF-IDF vectorization and cosine similarity.') }}
 
 <section class="section">
   <div class="container">
+    <div class="section-head"><h2>How the TF-IDF engine works</h2><p>The transparent one: it matches words, and shows every weight.</p></div>
     <div class="two-col">
       <article class="glass-card">
-        <h2 class="card-title">{{ macros.icon('scan') }} How this engine works</h2>
+        <h3 class="card-title">{{ macros.icon('scan') }} The pipeline</h3>
         <ol class="numbered-list">
-          <li>Clean and preprocess the resume and job description text (normalisation, symbols, stop words).</li>
-          <li>Build TF-IDF vectors — unigrams and bigrams weighted by importance across both documents.</li>
-          <li>Calculate cosine similarity between the two vectors.</li>
-          <li>Extract skills with a curated taxonomy and word-boundary matching.</li>
-          <li>Identify matched and missing skills.</li>
-          <li>Combine similarity (60%) and skill coverage (40%) into the match score.</li>
-          <li>Generate the analysis report.</li>
+          <li>Clean and preprocess both documents.</li>
+          <li>Build weighted TF-IDF vectors.</li>
+          <li>Take the cosine of the two vectors.</li>
+          <li>Score: similarity 60, coverage 40.</li>
         </ol>
         <div class="chip-row">
-          {{ macros.tech_chip('Python') }}{{ macros.tech_chip('Flask') }}{{ macros.tech_chip('TF-IDF') }}
-          {{ macros.tech_chip('Cosine Similarity') }}{{ macros.tech_chip('scikit-learn') }}{{ macros.tech_chip('NumPy') }}
+          {{ macros.tech_chip('TF-IDF') }}{{ macros.tech_chip('Cosine similarity') }}{{ macros.tech_chip('scikit-learn') }}
         </div>
       </article>
       <article class="glass-card">
-        <h2 class="card-title">{{ macros.icon('target') }} What it measures well</h2>
+        <h3 class="card-title">{{ macros.icon('target') }} What it measures well</h3>
         <ul class="check-list">
-          <li>{{ macros.icon('check') }} Exact keyword alignment between resume and job description</li>
+          <li>{{ macros.icon('check') }} Exact keyword alignment between documents</li>
           <li>{{ macros.icon('check') }} Term importance via inverse document frequency</li>
-          <li>{{ macros.icon('check') }} Fast, deterministic, fully explainable scoring</li>
+          <li>{{ macros.icon('check') }} Deterministic, explainable scores</li>
         </ul>
-        <h2 class="card-title">{{ macros.icon('x') }} Known limitation</h2>
-        <p class="muted">TF-IDF is lexical: “built deep learning models” gets no credit against “developed neural network solutions” — different words, zero shared terms. The Transformer engine exists precisely to cover this gap.</p>
-        <a class="text-link" href="{{ url_for('main.transformer') }}">Try the Transformer engine {{ macros.icon('arrow') }}</a>
+        <h3 class="card-title">{{ macros.icon('x') }} Known limitation</h3>
+        <p class="muted">“Built deep learning models” gets no credit against “developed neural network solutions”. Zero shared terms; the Transformer engine covers this gap.</p>
+        <a class="text-link" href="{{ url_for('main.transformer') }}">The Transformer engine {{ macros.icon('arrow') }}</a>
       </article>
     </div>
   </div>
@@ -41,7 +38,7 @@
 
 <section class="section section-alt">
   <div class="container">
-    <div class="section-head"><h2>Run the TF-IDF engine</h2><p>This panel uses the actual Python backend — results are computed live, never hardcoded.</p></div>
+    <div class="section-head"><h2>Run the TF-IDF engine</h2><p>This panel uses the actual Python backend. Results are computed live, never hardcoded.</p></div>
     {% set model_key = 'traditional' %}
     {% include '_analyzer.html' %}
   </div>

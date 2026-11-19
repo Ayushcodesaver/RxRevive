@@ -66,7 +66,7 @@ def education_alignment(resume_text, jd_text):
     if j == 0:
         return {"status": "info", "message": "The job description does not state an education requirement."}
     if r == 0:
-        return {"status": "gap", "message": f"The job asks for a {DEGREE_NAMES[j]} — no degree was detected in the resume."}
+        return {"status": "gap", "message": f"The job asks for a {DEGREE_NAMES[j]}; no degree was detected in the resume."}
     if r >= j:
         return {"status": "match", "message": f"Resume education ({DEGREE_NAMES[r]}) meets the job requirement ({DEGREE_NAMES[j]})."}
     return {"status": "gap", "message": f"Job requires {DEGREE_NAMES[j]}; resume shows {DEGREE_NAMES[r]}."}
@@ -79,7 +79,7 @@ def experience_alignment(resume_text, jd_text):
     if j is None:
         return {"status": "info", "message": "The job description does not state a required experience level."}
     if r is None:
-        return {"status": "gap", "message": f"The job asks for {j}+ years of experience — state your years of experience clearly in the resume."}
+        return {"status": "gap", "message": f"The job asks for {j}+ years of experience; state your years of experience clearly in the resume."}
     if r >= j:
         return {"status": "match", "message": f"Resume experience ({r} years) meets the requirement ({j}+ years)."}
     return {"status": "gap", "message": f"Job requires {j}+ years; resume states {r} years."}
@@ -95,7 +95,7 @@ def build_narrative(matched, missing, cosine_pct, skill_pct, shared_terms=None):
             f"The resume covers {len(matched)} of the skills identified in the job description, including {top}."
         )
     if skill_pct >= 70:
-        strengths.append("Skill coverage is high — the resume aligns well with the job requirements.")
+        strengths.append("Skill coverage is high; the resume aligns well with the job requirements.")
     if cosine_pct >= 60:
         strengths.append(f"Strong document similarity ({cosine_pct}%) between the resume and the job description.")
     if shared_terms:
@@ -108,7 +108,7 @@ def build_narrative(matched, missing, cosine_pct, skill_pct, shared_terms=None):
         )
     if skill_pct < 50:
         recommendations.append(
-            "Low skill coverage — tailor the resume toward the exact terms used in the job description."
+            "Low skill coverage; tailor the resume toward the exact terms used in the job description."
         )
     if cosine_pct < 40:
         recommendations.append(
@@ -116,8 +116,8 @@ def build_narrative(matched, missing, cosine_pct, skill_pct, shared_terms=None):
         )
     if not recommendations:
         recommendations.append(
-            "The resume aligns well with this job description — quantify achievements to strengthen it further."
+            "The resume aligns well with this job description; quantify achievements to strengthen it further."
         )
     if not strengths:
-        strengths.append("Limited overlap detected — see recommendations below.")
+        strengths.append("Limited overlap detected; see recommendations below.")
     return strengths, recommendations

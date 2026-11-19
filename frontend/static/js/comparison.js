@@ -2,6 +2,19 @@
 (function () {
   "use strict";
 
+  function emptyChart(canvasId, message) {
+    var el = document.getElementById(canvasId);
+    if (!el) return;
+    el.hidden = true;
+    var p = document.createElement("p");
+    p.className = "muted small";
+    p.style.textAlign = "center";
+    p.style.padding = "56px 0";
+    p.textContent = message;
+    el.parentNode.insertBefore(p, el.nextSibling);
+  }
+
+
   document.addEventListener("DOMContentLoaded", function () {
     Rx.api("/api/comparison/data")
       .then(function (data) { render(data); })
@@ -29,6 +42,7 @@
     var noneEl = document.getElementById("no-experiments");
 
     if (countEl) countEl.textContent = "(" + experiments.length + ")";
+    if (!latest) { emptyChart("compare-bar-chart", "Run a comparison to see its bars here."); emptyChart("time-bar-chart", "Processing times appear after a comparison run."); }
     if (!experiments.length) {
       if (noneEl) noneEl.hidden = false;
       if (rowsEl) rowsEl.innerHTML = "";
@@ -43,7 +57,7 @@
         datasets: [{
           label: "Match score (%)",
           data: [latest.traditional_score, latest.transformer_score],
-          backgroundColor: ["#f59e0b", "#22d3ee"]
+          backgroundColor: ["oklch(44% 0 0)", "oklch(50% 0.095 188)"]
         }]
       });
       RxCharts.bars("time-bar-chart", {
@@ -51,7 +65,7 @@
         datasets: [{
           label: "Processing time (s)",
           data: [latest.traditional_time, latest.transformer_time],
-          backgroundColor: ["#fbbf24", "#14b8a6"]
+          backgroundColor: ["oklch(65% 0 0)", "oklch(50% 0.095 188)"]
         }]
       }, { suggestedMax: Math.max(latest.traditional_time, latest.transformer_time) * 1.4 || 5 });
     }

@@ -10,6 +10,18 @@
       .catch(function (err) { Rx.toast(err.message, "error"); });
   });
 
+  function emptyChart(canvasId, message) {
+    var el = document.getElementById(canvasId);
+    if (!el) return;
+    el.hidden = true;
+    var p = document.createElement("p");
+    p.className = "muted small";
+    p.style.textAlign = "center";
+    p.style.padding = "56px 0";
+    p.textContent = message;
+    el.parentNode.insertBefore(p, el.nextSibling);
+  }
+
   function render(stats) {
     setText("stat-total", stats.total_analyses);
     var avg = null;
@@ -22,8 +34,12 @@
     setText("stat-trans", stats.transformer_usage);
 
     if (typeof RxCharts !== "undefined") {
-      RxCharts.doughnut("usage-doughnut", ["Traditional runs", "Transformer runs"],
-        [stats.traditional_usage, stats.transformer_usage], ["#f59e0b", "#22d3ee"]);
+      if (stats.traditional_usage || stats.transformer_usage) {
+        RxCharts.doughnut("usage-doughnut", ["Traditional runs", "Transformer runs"],
+          [stats.traditional_usage, stats.transformer_usage], ["oklch(44% 0 0)", "oklch(50% 0.095 188)"]);
+      } else {
+        emptyChart("usage-doughnut", "No analyses yet; engine usage appears after your first run.");
+      }
 
       var hist = stats.history || [];
       var labels = hist.map(function (a, i) { return "#" + (i + 1); });
@@ -31,16 +47,22 @@
       var trans = hist.map(function (a) { return a.transformer_score; });
       if (hist.length) {
         RxCharts.line("performance-chart", labels, [
-          { label: "Traditional NLP", data: trad, borderColor: "#f59e0b", backgroundColor: "#f59e0b", spanGaps: true },
-          { label: "Transformer NLP", data: trans, borderColor: "#22d3ee", backgroundColor: "#22d3ee", spanGaps: true }
+          { label: "Traditional NLP", data: trad, borderColor: "oklch(44% 0 0)", backgroundColor: "oklch(44% 0 0)", spanGaps: true },
+          { label: "Transformer NLP", data: trans, borderColor: "oklch(50% 0.095 188)", backgroundColor: "oklch(50% 0.095 188)", spanGaps: true }
         ]);
+      } else {
+        emptyChart("performance-chart", "Scores appear here as analyses accumulate.");
       }
 
       var dist = stats.score_distribution || {};
-      RxCharts.bars("distribution-chart", {
-        labels: Object.keys(dist),
-        datasets: [{ label: "Scores", data: Object.values(dist), backgroundColor: "#14b8a6" }]
-      }, { suggestedMax: undefined });
+      if (Object.keys(dist).length) {
+        RxCharts.bars("distribution-chart", {
+          labels: Object.keys(dist),
+          datasets: [{ label: "Scores", data: Object.values(dist), backgroundColor: "oklch(50% 0.095 188)" }]
+        }, { suggestedMax: undefined });
+      } else {
+        emptyChart("distribution-chart", "The distribution fills in as scores are stored.");
+      }
     }
 
     var tbody = document.getElementById("recent-rows");

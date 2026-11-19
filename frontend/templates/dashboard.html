@@ -8,24 +8,24 @@
 <section class="section">
   <div class="container">
     <div class="stats-cards" id="stats-cards">
-      <div class="glass-card stat-card"><span class="stat-icon">{{ macros.icon('doc') }}</span><span class="stat-value" id="stat-total">—</span><span class="stat-label">Total resume analyses</span></div>
-      <div class="glass-card stat-card"><span class="stat-icon">{{ macros.icon('gauge') }}</span><span class="stat-value" id="stat-avg">—</span><span class="stat-label">Average matching score</span></div>
-      <div class="glass-card stat-card"><span class="stat-icon">{{ macros.icon('scan') }}</span><span class="stat-value" id="stat-trad">—</span><span class="stat-label">Traditional NLP usage</span></div>
-      <div class="glass-card stat-card"><span class="stat-icon">{{ macros.icon('brain') }}</span><span class="stat-value" id="stat-trans">—</span><span class="stat-label">Transformer NLP usage</span></div>
+      <div class="glass-card stat-card"><span class="stat-icon">{{ macros.icon('doc') }}</span><span class="stat-value" id="stat-total">…</span><span class="stat-label">Total resume analyses</span></div>
+      <div class="glass-card stat-card"><span class="stat-icon">{{ macros.icon('gauge') }}</span><span class="stat-value" id="stat-avg">…</span><span class="stat-label">Average matching score</span></div>
+      <div class="glass-card stat-card"><span class="stat-icon">{{ macros.icon('scan') }}</span><span class="stat-value" id="stat-trad">…</span><span class="stat-label">Traditional NLP usage</span></div>
+      <div class="glass-card stat-card"><span class="stat-icon">{{ macros.icon('brain') }}</span><span class="stat-value" id="stat-trans">…</span><span class="stat-label">Transformer NLP usage</span></div>
     </div>
 
-    <div class="charts-row">
+    <div class="charts-row cols-3">
       <div class="glass-card chart-card">
         <h3>Engine usage</h3>
-        <canvas id="usage-doughnut" height="220"></canvas>
+        <canvas id="usage-doughnut" height="220" aria-label="Doughnut chart of engine usage" role="img"></canvas>
       </div>
       <div class="glass-card chart-card">
         <h3>Matching performance over time</h3>
-        <canvas id="performance-chart" height="220"></canvas>
+        <canvas id="performance-chart" height="220" aria-label="Line chart of matching scores over time" role="img"></canvas>
       </div>
       <div class="glass-card chart-card">
         <h3>Score distribution</h3>
-        <canvas id="distribution-chart" height="220"></canvas>
+        <canvas id="distribution-chart" height="220" aria-label="Bar chart of score distribution" role="img"></canvas>
       </div>
     </div>
 
@@ -50,7 +50,7 @@
           <tbody id="recent-rows"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
         </table>
       </div>
-      <p class="muted small" id="no-recent" hidden>No analyses yet. Your activity history will appear here — start with the <a class="inline-link" href="{{ url_for('analysis.analyze_page') }}">analyze page</a>.</p>
+      <p class="muted small" id="no-recent" hidden>No analyses yet. Your activity history will appear here. Start with the <a class="inline-link" href="{{ url_for('analysis.analyze_page') }}">analyze page</a>.</p>
     </div>
   </div>
 </section>

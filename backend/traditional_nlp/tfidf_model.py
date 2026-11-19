@@ -93,7 +93,7 @@ def analyze_traditional(resume_text, jd_text, resume_skills, jd_skills):
             f"Skill coverage: {len(matched)}/{len(jd_list)} JD skills found in the resume = {skill_pct}% (weight {WEIGHT_SKILLS}).",
             f"Final score = {WEIGHT_SIMILARITY} x {cosine_pct} + {WEIGHT_SKILLS} x {skill_pct} = {match_score}%",
             f"Top shared terms: {', '.join(shared_terms) if shared_terms else '(no significant overlap)'}",
-            "Limitation: TF-IDF matches words, not meaning — synonyms that use different words are not credited.",
+            "Limitation: TF-IDF matches words, not meaning; synonyms that use different words are not credited.",
         ],
         "disclaimer": (
             "A similarity score measures textual and skill overlap with the job description. "

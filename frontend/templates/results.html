@@ -7,9 +7,10 @@
   <div class="container">
     <h1 class="page-title">Analysis Results</h1>
     <p class="page-subtitle">
-      {% if analysis.job_title %}{{ analysis.job_title }}{% if analysis.company %} · {{ analysis.company }}{% endif %} — {% endif %}
-      analyzed {{ analysis.created_at.strftime('%d %b %Y, %H:%M UTC') }} ·
-      Model: <strong>{{ {'traditional': 'Traditional NLP', 'transformer': 'Transformer NLP', 'compare': 'Comparison (both engines)'}[analysis.model_name] }}</strong>
+      {% if analysis.job_title %}{{ analysis.job_title }}{% if analysis.company %}, {{ analysis.company }}{% endif %}.
+      {% endif %}
+      Analyzed {{ analysis.created_at.strftime('%d %b %Y, %H:%M UTC') }} with
+      <strong>{{ {'traditional': 'Traditional NLP', 'transformer': 'Transformer NLP', 'compare': 'Comparison (both engines)'}[analysis.model_name] }}</strong>.
     </p>
   </div>
 </section>
@@ -19,7 +20,7 @@
 
     {% if analysis.model_name == 'compare' %}
     <div class="score-duo">
-      {% for key, label, cls in [('traditional', 'Traditional NLP · TF-IDF', 'trad'), ('transformer', 'Transformer NLP · SBERT', 'trans')] %}
+      {% for key, label, cls in [('traditional', 'Traditional NLP (TF-IDF)', 'trad'), ('transformer', 'Transformer NLP (SBERT)', 'trans')] %}
         {% set res = payload.get(key) %}
         {% if res %}
         <div class="glass-card score-panel {{ cls }}">
@@ -39,7 +40,7 @@
             <div class="breakdown-row"><dt>Skill coverage</dt><dd>{{ res.skill_percentage }}%</dd></div>
             <div class="breakdown-row"><dt>Processing time</dt><dd>{{ res.processing_time }}s</dd></div>
           </dl>
-          <button class="btn ghost small jump-btn" data-target="panel-{{ key }}">Skill analysis ↓</button>
+          <button class="btn ghost small jump-btn" data-target="panel-{{ key }}">Skill analysis</button>
         </div>
         {% endif %}
       {% endfor %}
@@ -48,7 +49,7 @@
         <h3>Difference</h3>
         {% set diff = payload.transformer.match_percentage - payload.traditional.match_percentage %}
         <p class="diff-value {{ 'pos' if diff > 0 else ('neg' if diff < 0 else '') }}">{{ '%+d'|format(diff) }} pts</p>
-        <p class="muted small">Transformer − Traditional on identical inputs. The scores are not calibrated probabilities and are not directly interchangeable.</p>
+        <p class="muted small">Transformer minus Traditional on identical inputs. The scores are not calibrated probabilities and are not directly interchangeable.</p>
       </div>
       {% endif %}
       {% if payload.get('error_note') %}
@@ -84,26 +85,53 @@
     <div class="charts-row">
       <div class="glass-card chart-card">
         <h3>Matched vs missing skills</h3>
-        <canvas id="skills-doughnut" height="220"></canvas>
+        <canvas id="skills-doughnut" height="220" aria-label="Doughnut chart of matched versus missing skills" role="img"></canvas>
       </div>
       <div class="glass-card chart-card">
         <h3>Requirement breakdown</h3>
-        <canvas id="breakdown-bars" height="220"></canvas>
+        <canvas id="breakdown-bars" height="220" aria-label="Bar chart of similarity, skill coverage and final score" role="img"></canvas>
       </div>
     </div>
 
-    {% for key, label, panel_cls in [('traditional', 'Traditional NLP · TF-IDF analysis', 'panel-traditional'), ('transformer', 'Transformer NLP · SBERT analysis', 'panel-transformer')] %}
+    <div class="section-head"><h2>The engine analyses</h2><p>The same taxonomy and weights in both panels; only the similarity differs.</p></div>
+
+    {% if analysis.model_name == 'compare' %}
+    <div class="glass-card shared-match">
+      <h3>The match list</h3>
+      <p class="muted small">One word-boundary pass over the same two documents, so both engines report the same skills.</p>
+      {% set res0 = payload.get('transformer') or payload.get('traditional') %}
+      {% if res0 and res0.matched_by_category %}
+        {% for category, skills in res0.matched_by_category.items() %}
+        <p class="skill-category">{{ category }}</p>
+        <div class="chip-row">{% for skill in skills %}<span class="chip matched">{{ skill }}</span>{% endfor %}</div>
+        {% endfor %}
+      {% endif %}
+      <h4 class="sub-title">{{ macros.icon('x') }} Missing skills <span class="count-pill warn">{{ res0.missing_skills|length }}</span></h4>
+      {% if res0.missing_skills %}
+      <div class="chip-row">{% for skill in res0.missing_skills %}<span class="chip missing">{{ skill }}</span>{% endfor %}</div>
+      {% else %}
+      <p class="muted">The resume covers every identified job description skill.</p>
+      {% endif %}
+      <h4 class="sub-title">{{ macros.icon('spark') }} Strengths and recommendations</h4>
+      <ul class="point-list">{% for st in res0.strengths %}<li>{{ st }}</li>{% endfor %}</ul>
+      <ul class="point-list">{% for st in res0.recommendations %}<li>{{ st }}</li>{% endfor %}</ul>
+      <ul class="point-list">
+        <li>{{ res0.experience_alignment.message }} <span class="align-tag {{ res0.experience_alignment.status }}">{{ res0.experience_alignment.status }}</span></li>
+        <li>{{ res0.education_alignment.message }} <span class="align-tag {{ res0.education_alignment.status }}">{{ res0.education_alignment.status }}</span></li>
+      </ul>
+    </div>
+    {% endif %}
+
+    {% for key, label, panel_cls in [('traditional', 'Traditional NLP (TF-IDF analysis)', 'panel-traditional'), ('transformer', 'Transformer NLP (SBERT analysis)', 'panel-transformer')] %}
       {% set res = payload.get(key) %}
       {% if res %}
       <div class="glass-card results-panel {{ panel_cls }}" id="panel-{{ key }}">
-        <h2 class="card-title">{{ macros.icon('target') }} {{ label }}</h2>
-        {% if analysis.model_name == 'compare' and payload.get('traditional') and payload.get('transformer') %}
-        <p class="muted small">Skill sets below are identical in both panels when the same taxonomy matches — the difference lives in the similarity component.</p>
-        {% endif %}
+        <h3 class="card-title">{{ macros.icon('target') }} {{ label }}</h3>
 
+        {% if analysis.model_name != 'compare' %}
         <div class="results-grid-2">
           <div>
-            <h3 class="sub-title">{{ macros.icon('check') }} Matched skills <span class="count-pill">{{ res.matched_skills|length }}</span></h3>
+            <h4 class="sub-title">{{ macros.icon('check') }} Matched skills <span class="count-pill">{{ res.matched_skills|length }}</span></h4>
             {% if res.matched_by_category %}
               {% for category, skills in res.matched_by_category.items() %}
               <p class="skill-category">{{ category }}</p>
@@ -114,7 +142,7 @@
             {% else %}
               <p class="muted">No taxonomy skills matched.</p>
             {% endif %}
-            <h3 class="sub-title">{{ macros.icon('x') }} Missing skills <span class="count-pill warn">{{ res.missing_skills|length }}</span></h3>
+            <h4 class="sub-title">{{ macros.icon('x') }} Missing skills <span class="count-pill warn">{{ res.missing_skills|length }}</span></h4>
             {% if res.missing_skills %}
             <div class="chip-row">{% for skill in res.missing_skills %}<span class="chip missing">{{ skill }}</span>{% endfor %}</div>
             {% else %}
@@ -122,20 +150,27 @@
             {% endif %}
           </div>
           <div>
-            <h3 class="sub-title">{{ macros.icon('spark') }} Candidate strengths</h3>
-            <ul class="point-list">{% for s in res.strengths %}<li>{{ s }}</li>{% endfor %}</ul>
-            <h3 class="sub-title">{{ macros.icon('arrow') }} Improvement recommendations</h3>
-            <ul class="point-list">{% for s in res.recommendations %}<li>{{ s }}</li>{% endfor %}</ul>
-            <h3 class="sub-title">{{ macros.icon('clock') }} Experience &amp; education alignment</h3>
+            <h4 class="sub-title">{{ macros.icon('spark') }} Candidate strengths</h4>
+            <ul class="point-list">{% for st in res.strengths %}<li>{{ st }}</li>{% endfor %}</ul>
+            <h4 class="sub-title">{{ macros.icon('arrow') }} Improvement recommendations</h4>
+            <ul class="point-list">{% for st in res.recommendations %}<li>{{ st }}</li>{% endfor %}</ul>
+            <h4 class="sub-title">{{ macros.icon('clock') }} Experience &amp; education alignment</h4>
             <ul class="point-list">
               <li>{{ res.experience_alignment.message }} <span class="align-tag {{ res.experience_alignment.status }}">{{ res.experience_alignment.status }}</span></li>
               <li>{{ res.education_alignment.message }} <span class="align-tag {{ res.education_alignment.status }}">{{ res.education_alignment.status }}</span></li>
             </ul>
           </div>
         </div>
+        {% else %}
+        <dl class="engine-facts">
+          <div><dt>{{ res.cosine_label }}</dt><dd>{{ res.cosine_percentage }}%</dd></div>
+          <div><dt>Skill coverage</dt><dd>{{ res.skill_percentage }}%</dd></div>
+          <div><dt>Processing time</dt><dd>{{ res.processing_time }}s</dd></div>
+        </dl>
+        {% endif %}
 
         <details class="engine-details">
-          <summary>{{ macros.icon('settings') }} Technical details — {{ label }}</summary>
+          <summary>{{ macros.icon('settings') }} Technical details: {{ label }}</summary>
           <ul class="detail-list">{% for d in res.details %}<li>{{ d }}</li>{% endfor %}</ul>
         </details>
       </div>
@@ -172,7 +207,7 @@
       if (res.cosine_percentage !== undefined) {
         RxCharts.bars('breakdown-bars', {
           labels: ['Similarity', 'Skill coverage', 'Final score'],
-          datasets: [{ label: 'Percentage', data: [res.cosine_percentage, res.skill_percentage, res.match_percentage], backgroundColor: ['#22d3ee', '#14b8a6', '#f59e0b'] }]
+          datasets: [{ label: 'Percentage', data: [res.cosine_percentage, res.skill_percentage, res.match_percentage], backgroundColor: ['oklch(44% 0 0)', 'oklch(50% 0.095 188)', 'oklch(65% 0 0)'] }]
         });
       }
     }

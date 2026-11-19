@@ -51,7 +51,7 @@ def generate_pdf(analysis, out_path):
     story = []
 
     story.append(Paragraph("RxRevive · Resume–Job Description Match Report", st["title"]))
-    story.append(Paragraph("Intelligent Resume and Job Description Matching System — Team RxRevive", st["subtitle"]))
+    story.append(Paragraph("Intelligent Resume and Job Description Matching System (Team RxRevive)", st["subtitle"]))
     story.append(HRFlowable(width="100%", thickness=1, color=ACCENT))
 
     # Header facts table
@@ -118,18 +118,18 @@ def generate_pdf(analysis, out_path):
 
     story.append(Paragraph("Missing Skills", st["h2"]))
     missing = json.loads(analysis.missing_skills or "[]")
-    story.append(Paragraph(", ".join(missing) if missing else "(none — the resume covers every identified JD skill)", st["body"]))
+    story.append(Paragraph(", ".join(missing) if missing else "(none: the resume covers every identified JD skill)", st["body"]))
 
     # Strengths / recommendations per model
     for key, label in (("traditional", "Traditional NLP"), ("transformer", "Transformer NLP")):
         res = payload.get(key)
         if not res:
             continue
-        story.append(Paragraph(f"{label} — Strengths", st["h2"]))
+        story.append(Paragraph(f"{label}: Strengths", st["h2"]))
         story.extend(_bullets(res.get("strengths", []), st["item"]))
-        story.append(Paragraph(f"{label} — Improvement Recommendations", st["h2"]))
+        story.append(Paragraph(f"{label}: Improvement Recommendations", st["h2"]))
         story.extend(_bullets(res.get("recommendations", []), st["item"]))
-        story.append(Paragraph(f"{label} — Technical Notes", st["h2"]))
+        story.append(Paragraph(f"{label}: Technical Notes", st["h2"]))
         story.extend(_bullets(res.get("details", []), st["item"]))
 
     story.append(Spacer(1, 10))
@@ -137,7 +137,7 @@ def generate_pdf(analysis, out_path):
     story.append(Paragraph("Disclaimer", st["h2"]))
     story.append(Paragraph(
         "This report is generated automatically for educational purposes. Matching scores measure "
-        "textual/semantic and skill overlap only — they are suggestions, not probabilities of employment "
+        "textual/semantic and skill overlap only; they are suggestions, not probabilities of employment "
         "and not objective hiring decisions.",
         st["small"],
     ))

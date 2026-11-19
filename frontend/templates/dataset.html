@@ -3,20 +3,20 @@
 {% block title %}Dataset & Research · RxRevive{% endblock %}
 
 {% block content %}
-{{ macros.page_header('Dataset & Research', 'Candidate datasets for supervised evaluation of both engines. Source links are added only after verification — none are invented here.') }}
+{{ macros.page_header('Dataset & Research', 'Candidate datasets for supervised evaluation of both engines. Source links are added only after verification; none are invented here.') }}
 
 <section class="section">
   <div class="container">
     <div class="section-head">
       <h2>Candidate datasets</h2>
-      <p>Primary recommendation: the <strong>Resume-Job Fit Dataset</strong>, because it ships with fit labels and dedicated train/test splits. Sizes below are as listed by the dataset owners at the time of writing — verify them on Hugging Face or Kaggle before citing them in the report.</p>
+      <p>Primary recommendation: the <strong>Resume-Job Fit Dataset</strong>. Verify sizes on Hugging Face before citing.</p>
     </div>
     <div class="dataset-grid">
       {% for ds in [
-        {'name': 'Resume-Job Fit Dataset', 'tag': 'Primary', 'size': '~93,733 examples', 'format': 'Hugging Face dataset / CSV', 'features': 'Resume text · job description · fit label (Good Fit / Potential Fit / No Fit)', 'splits': 'Training and testing splits provided', 'role': 'Label-supervised evaluation of both engines'},
-        {'name': 'Resume-JD Matching Dataset', 'tag': 'Alternative', 'size': '~29,040 pairs · synthetic', 'format': 'CSV', 'features': '1,320 resumes · 1,320 job descriptions · positive/negative match labels', 'splits': 'Single split — build your own train/test', 'role': 'Pair-matching experiments'},
-        {'name': 'Resume and JD Matching Dataset', 'tag': 'Supplementary', 'size': '~1,031 samples', 'format': 'CSV', 'features': 'Matched & mismatched resumes · matching scores · skill alignment info', 'splits': 'Single split — build your own train/test', 'role': 'Small-scale sanity checks'},
-        {'name': 'Role Radar Dataset', 'tag': 'Regional', 'size': '~22,465 profile-job pairs · India', 'format': 'CSV', 'features': '2,500 Indian job postings · 640 candidate profiles · skills/experience/domain scores', 'splits': 'Single split — build your own train/test', 'role': 'Regional generalisation testing'},
+        {'name': 'Resume-Job Fit Dataset', 'tag': 'Primary', 'size': '~93,733 examples', 'format': 'CSV (Hugging Face)', 'features': 'Text pairs, fit labels', 'splits': 'Train and test provided', 'role': 'Label-supervised evaluation'},
+        {'name': 'Resume-JD Matching Dataset', 'tag': 'Alternative', 'size': '~29,040 pairs, synthetic', 'format': 'CSV', 'features': 'Resume-JD pairs, match labels', 'splits': 'Single split'},
+        {'name': 'Resume and JD Matching Dataset', 'tag': 'Supplementary', 'size': '~1,031 samples', 'format': 'CSV', 'features': 'Matched pairs, scores', 'splits': 'Single split'},
+        {'name': 'Role Radar Dataset', 'tag': 'Regional', 'size': '~22,465 profile-job pairs, India', 'format': 'CSV', 'features': 'Postings, profiles, scores', 'splits': 'Single split'},
       ] %}
       <article class="glass-card dataset-card">
         <div class="dataset-card-head">
@@ -28,12 +28,11 @@
           <div><dt>Format</dt><dd>{{ ds.format }}</dd></div>
           <div><dt>Features</dt><dd>{{ ds.features }}</dd></div>
           <div><dt>Splits</dt><dd>{{ ds.splits }}</dd></div>
-          <div><dt>Role</dt><dd>{{ ds.role }}</dd></div>
         </dl>
       </article>
       {% endfor %}
     </div>
-    <p class="muted small">Verified source links will be added here once the team confirms them on Hugging Face / Kaggle — deliberately not pre-filled to avoid citing unverified URLs.</p>
+    <p class="muted small">Verified source links land once the team confirms them.</p>
   </div>
 </section>
 
@@ -44,14 +43,14 @@
       <p>Applied identically to both engines so any performance difference comes from the model, not the data handling.</p>
     </div>
     <ol class="flow-grid">
-      {{ macros.step_card(1, 'Text Normalisation', 'Unicode punctuation variants folded to ASCII; lowercasing.') }}
-      {{ macros.step_card(2, 'Symbol Removal', 'Noise stripped while protecting skill tokens (C++, C#, .NET, CI/CD).') }}
-      {{ macros.step_card(3, 'Tokenisation', 'Regex word tokens that keep +, #, . and - inside skill names.') }}
-      {{ macros.step_card(4, 'Stop Word Handling', 'Built-in English stop word list — no external downloads required.') }}
-      {{ macros.step_card(5, 'Text Cleaning', 'Whitespace collapse, control-character removal, length guards.') }}
-      {{ macros.step_card(6, 'Skill Extraction', 'Word-boundary matching against the 150+ skill taxonomy.') }}
-      {{ macros.step_card(7, 'Feature Generation', 'TF-IDF vectors (Branch A) or SBERT embeddings (Branch B).') }}
-      {{ macros.step_card(8, 'Train/Test Splitting', 'Performed on the labelled dataset in Phase 6 — same split for both engines.') }}
+      {{ macros.step_card(1, 'Normalisation', 'Unicode punctuation folded, lowercased.') }}
+      {{ macros.step_card(2, 'Symbol removal', 'Noise stripped, C++ and C# kept.') }}
+      {{ macros.step_card(3, 'Tokenisation', 'Word tokens keep skill punctuation.') }}
+      {{ macros.step_card(4, 'Stop words', 'Built-in list, no downloads.') }}
+      {{ macros.step_card(5, 'Cleaning', 'Whitespace collapsed, length guarded.') }}
+      {{ macros.step_card(6, 'Skills', 'Word-boundary match over the taxonomy.') }}
+      {{ macros.step_card(7, 'Features', 'TF-IDF vectors or SBERT embeddings.') }}
+      {{ macros.step_card(8, 'Splits', 'One labelled split, shared by both.') }}
     </ol>
   </div>
 </section>
@@ -60,7 +59,7 @@
   <div class="container">
     <div class="glass-card upload-panel">
       <h2>{{ macros.icon('upload') }} Upload a labelled dataset (CSV)</h2>
-      <p class="muted">For authorized research experiments only. The CSV is validated and stored locally under <code>datasets/</code>; its structure is reported back. Label-supervised evaluation is not configured yet — see the honest status on the <a class="inline-link" href="{{ url_for('main.comparison') }}">comparison page</a>.</p>
+      <p class="muted">For authorized experiments only; stored under <code>datasets/</code>.</p>
       <div class="upload-row">
         <input type="file" id="dataset-file" accept=".csv">
         <button class="btn accent" id="dataset-upload-btn" type="button">{{ macros.icon('upload') }} Upload dataset</button>

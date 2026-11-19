@@ -31,7 +31,7 @@ def _extract_pdf(data):
         reader = PdfReader(io.BytesIO(data))
         pages = [(page.extract_text() or "") for page in reader.pages]
     except Exception as exc:
-        raise ExtractionError(f"Could not read the PDF file — it may be corrupted or password protected: {exc}") from exc
+        raise ExtractionError(f"Could not read the PDF file; it may be corrupted or password protected: {exc}") from exc
     return "\n".join(pages)
 
 

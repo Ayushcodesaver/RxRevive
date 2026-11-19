@@ -3,59 +3,74 @@
 {% block title %}Project Architecture · RxRevive{% endblock %}
 
 {% block content %}
-{{ macros.page_header('Project Architecture', 'From user interface to database and PDF reports — the complete flow, with the NLP layer branching into both engines.') }}
+{{ macros.page_header('Project Architecture', 'From user interface to database and PDF reports: the complete flow, with the NLP layer branching into both engines.') }}
 
 <section class="section">
   <div class="container">
-    <div class="arch-flow">
-      <div class="arch-node top">{{ macros.icon('chart') }}<strong>User Interface</strong><em>15 responsive pages · Chart.js · vanilla JS</em></div>
-      <div class="arch-arrow" aria-hidden="true">↓</div>
-      <div class="arch-node">{{ macros.icon('upload') }}<strong>Resume Upload</strong><em>PDF / DOCX / TXT · validation · safe filenames</em></div>
-      <div class="arch-arrow" aria-hidden="true">↓</div>
-      <div class="arch-node">{{ macros.icon('scan') }}<strong>Text Extraction</strong><em>in-memory parsing · cleaning · scanned-file detection</em></div>
-      <div class="arch-arrow" aria-hidden="true">↓</div>
-      <div class="arch-node">{{ macros.icon('settings') }}<strong>Text Preprocessing</strong><em>normalisation · symbol handling · tokenisation · stop words</em></div>
-      <div class="arch-arrow" aria-hidden="true">↓</div>
-      <div class="arch-node accent-node">{{ macros.icon('brain') }}<strong>NLP Processing Layer</strong><em>shared skill taxonomy · 150+ skills · word-boundary matching</em></div>
-
-      <div class="arch-branch">
-        <div class="arch-branch-line" aria-hidden="true"></div>
-        <div class="arch-branches">
-          <div class="arch-node branch-a">{{ macros.icon('scan') }}<strong>Branch A · Traditional NLP</strong><em>TF-IDF vectorizer → cosine similarity</em></div>
-          <div class="arch-node branch-b">{{ macros.icon('brain') }}<strong>Branch B · Transformer NLP</strong><em>Sentence-BERT → semantic embeddings</em></div>
-        </div>
+    <ol class="arch-steps">
+      <li><strong>Resume upload</strong><span>PDF, DOCX and TXT; validated</span></li>
+      <li><strong>Text extraction</strong><span>In memory, cleaned, scans flagged</span></li>
+      <li><strong>Preprocessing</strong><span>Normalise, tokenise, stop words</span></li>
+      <li class="core"><strong>NLP processing layer</strong><span>One taxonomy, 150+ skills</span></li>
+      <li><strong>Matching and skills</strong><span>0.6 × similarity + 0.4 × coverage</span></li>
+      <li><strong>Results</strong><span>Rings and bars, the verdict</span></li>
+      <li><strong>Database</strong><span>SQLAlchemy over SQLite</span></li>
+      <li><strong>PDF report</strong><span>ReportLab, on demand</span></li>
+    </ol>
+    <div class="arch-branch-rows">
+      <div class="branch-row">
+        <span class="tag-out">Branch A</span>
+        <div><strong>Traditional NLP</strong><span>TF-IDF vectors, cosine similarity. Fast, deterministic, explainable.</span></div>
       </div>
-
-      <div class="arch-arrow" aria-hidden="true">↓</div>
-      <div class="arch-node">{{ macros.icon('target') }}<strong>Matching &amp; Skill Analysis</strong><em>0.6 × similarity + 0.4 × skill coverage · matched/missing skills · experience &amp; education alignment</em></div>
-      <div class="arch-arrow" aria-hidden="true">↓</div>
-      <div class="arch-node">{{ macros.icon('gauge') }}<strong>Results Generation</strong><em>score ring · doughnut &amp; bar charts · suitability verdict</em></div>
-      <div class="arch-arrow" aria-hidden="true">↓</div>
-      <div class="arch-node top">{{ macros.icon('database') }}<strong>Database &amp; PDF Reports</strong><em>SQLite + SQLAlchemy · ReportLab · secure history</em></div>
+      <div class="branch-row">
+        <span class="tag-in">Branch B</span>
+        <div><strong>Transformer NLP</strong><span>Sentence-BERT embeddings, semantic cosine. Contextual, paraphrase-aware.</span></div>
+      </div>
     </div>
+</div>
   </div>
 </section>
 
 <section class="section section-alt">
   <div class="container">
-    <div class="section-head"><h2>Codebase structure</h2><p>Clean separation: routes are thin, engines are swappable, shared logic lives once.</p></div>
-    <pre class="code-block">RxRevive/
-├── run.py                    ← python run.py
+    <div class="section-head"><h2>Codebase structure</h2><p>Routes are thin, engines are swappable, shared logic lives once.</p></div>
+    <div class="arch-readout">
+      <ul class="arch-facts">
+        <li><strong>Backend</strong><span>Flask factory, blueprints</span></li>
+        <li><strong>Engines</strong><span>Two modules, one schema</span></li>
+        <li><strong>Shared layer</strong><span>Extraction and skills</span></li>
+        <li><strong>Storage</strong><span>SQLAlchemy over SQLite</span></li>
+        <li><strong>Reports</strong><span>ReportLab, written on demand</span></li>
+      </ul>
+    <figure class="code-fig">
+        <pre class="code-block">RxRevive/
+├── run.py                  (python run.py)
 ├── backend/
-│   ├── app.py                ← application factory + blueprints
-│   ├── config.py             ← paths, secrets, upload policy
-│   ├── shared/               ← text_extraction · preprocessing · skill_extractor · analysis_helpers
-│   ├── traditional_nlp/      ← tfidf_model.py        (Branch A)
-│   ├── transformer_nlp/      ← sentence_bert.py      (Branch B)
-│   ├── reports/              ← report_generator.py   (ReportLab PDF)
-│   ├── database/             ← SQLAlchemy models (User · Analysis · ReportFile)
-│   └── routes/               ← main · analysis · reports · authentication · dashboard
-├── frontend/
-│   ├── templates/            ← 17 Jinja2 templates
-│   └── static/               ← css · js (+ vendored Chart.js)
-├── datasets/                 ← labelled CSV datasets for Phase-6 evaluation
-├── generated_reports/        ← generated PDFs
-└── uploads/                  ← temp area (files parsed in memory)</pre>
+│   ├── shared/             (extraction, skills)
+│   ├── traditional_nlp/    (Branch A)
+│   ├── transformer_nlp/    (Branch B)
+│   └── routes/             (five thin blueprints)
+└── frontend/               (templates, css, js)</pre>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="band-close">
+  <div class="container">
+    <div>
+      <h2>Trace one analysis yourself.</h2>
+      <p>Follow a resume from upload to PDF report, engine by engine.</p>
+      <div class="hero-actions">
+        <a class="btn paper" href="{{ url_for('analysis.analyze_page') }}">Run an analysis</a>
+        <a class="btn quiet" href="{{ url_for('main.how_it_works') }}">The ten steps</a>
+      </div>
+    </div>
+    <dl class="engine-facts">
+      <div><dt>Input</dt><dd>One resume, one job description</dd></div>
+      <div><dt>Path</dt><dd>Both engines, same weights</dd></div>
+      <div><dt>Output</dt><dd>Two scores, a match list, a PDF</dd></div>
+    </dl>
   </div>
 </section>
 {% endblock %}

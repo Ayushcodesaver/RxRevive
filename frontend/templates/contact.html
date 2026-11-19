@@ -3,21 +3,23 @@
 {% block title %}Contact · RxRevive{% endblock %}
 
 {% block content %}
-{{ macros.page_header('Contact the Team', 'Questions, feedback or collaboration — send the RxRevive team a message. No personal contact details are invented here.') }}
+{{ macros.page_header('Contact the Team', 'Questions, feedback or collaboration: send the RxRevive team a message. No personal contact details are invented here.') }}
 
 <section class="section">
-  <div class="container contact-grid">
+  <div class="container">
+    <div class="section-head"><h2>Send the team a message</h2><p>Messages land in the project database for the team to read.</p></div>
+    <div class="contact-grid">
     <div class="glass-card contact-info">
-      <h2>{{ macros.icon('spark') }} About RxRevive</h2>
-      <p>RxRevive is an academic final-year project: an intelligent resume and job description matching system built to compare Traditional NLP (TF-IDF) and Transformer NLP (Sentence-BERT) on the same problem statement.</p>
-      <h2>{{ macros.icon('user') }} The team</h2>
-      <p><strong>Team RxRevive</strong> — NLP research, backend engineering, frontend &amp; UX, and documentation roles. Individual member details are documented in the project report and viva submission.</p>
-      <h2>{{ macros.icon('target') }} Project purpose</h2>
-      <p>This platform exists for learning, demonstration and academic evaluation. All match scores are educational suggestions — never automated hiring decisions. Messages sent here are stored in the project database for the team to review.</p>
+      <h3 class="card-title">{{ macros.icon('spark') }} About RxRevive</h3>
+      <p>An academic final-year project: one matching problem, two engines run on identical inputs.</p>
+      <h3 class="card-title">{{ macros.icon('user') }} The team</h3>
+      <p><strong>Team RxRevive</strong> covers NLP research, backend engineering, frontend and UX, and documentation roles. Individual member details are documented in the project report and viva submission.</p>
+      <h3 class="card-title">{{ macros.icon('target') }} Project purpose</h3>
+      <p>Built for learning, demonstration and academic evaluation. All match scores are educational suggestions, never automated hiring decisions.</p>
     </div>
 
     <div class="glass-card contact-form-card">
-      <h2>{{ macros.icon('doc') }} Feedback &amp; contact form</h2>
+      <h3 class="card-title">{{ macros.icon('doc') }} Feedback &amp; contact form</h3>
       <form id="contact-form" novalidate>
         <div class="two-inputs">
           <div>

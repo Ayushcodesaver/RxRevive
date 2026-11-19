@@ -3,7 +3,7 @@
 {% block title %}Model Comparison · RxRevive{% endblock %}
 
 {% block content %}
-{{ macros.page_header('Model Comparison', 'Traditional NLP vs Transformer NLP — side by side, on identical inputs. Every number here comes from your stored experiments; nothing is fabricated.') }}
+{{ macros.page_header('Model Comparison', 'Traditional NLP and Transformer NLP, side by side on identical inputs. Every number here comes from your stored experiments; nothing is fabricated.') }}
 
 <section class="section">
   <div class="container">
@@ -35,18 +35,18 @@
     <div class="section-head"><h2>Performance metrics</h2><p>Matching scores and processing times come from stored experiments. Label-supervised metrics require a labelled dataset and are shown honestly when unavailable.</p></div>
 
     <div class="glass-card">
-      <h3>Labelled evaluation — precision, recall, F1</h3>
+      <h3>Labelled evaluation: precision, recall, F1</h3>
       <div class="eval-status" id="eval-status"></div>
     </div>
 
     <div class="charts-row">
       <div class="glass-card chart-card">
         <h3>Latest comparison experiment</h3>
-        <canvas id="compare-bar-chart" height="220"></canvas>
+        <canvas id="compare-bar-chart" height="220" aria-label="Bar chart comparing both engines on the latest experiment" role="img"></canvas>
       </div>
       <div class="glass-card chart-card">
         <h3>Processing time (seconds)</h3>
-        <canvas id="time-bar-chart" height="220"></canvas>
+        <canvas id="time-bar-chart" height="220" aria-label="Bar chart of processing time per engine" role="img"></canvas>
       </div>
     </div>
 
@@ -58,7 +58,7 @@
           <tbody id="experiment-rows"></tbody>
         </table>
       </div>
-      <p class="muted small" id="no-experiments" hidden>No comparison experiments yet — run one from the <a class="inline-link" href="{{ url_for('analysis.analyze_page') }}">analysis page</a> with “Compare Both Models”.</p>
+      <p class="muted small" id="no-experiments" hidden>No comparison experiments yet. Run one from the <a class="inline-link" href="{{ url_for('analysis.analyze_page') }}">analysis page</a> with “Compare Both Models”.</p>
     </div>
   </div>
 </section>
@@ -67,7 +67,7 @@
   <div class="container">
     <div class="glass-card interpretation">
       <h2>{{ macros.icon('lock') }} How to interpret the scores</h2>
-      <p>The two scores are <strong>not calibrated probabilities</strong> and are not directly interchangeable: TF-IDF measures lexical overlap, SBERT measures semantic proximity, and both are combined with skill coverage using the same 60/40 weighting. A 10-point difference means the engines weighted your evidence differently — not that one is “10% more employable”. For the fair evaluation methodology, both engines always receive the exact same resume and job description text, the same skill taxonomy and the same weights.</p>
+      <p>The two scores are <strong>not calibrated probabilities</strong> and are not directly interchangeable. TF-IDF measures lexical overlap, SBERT measures semantic proximity, and both are combined with skill coverage using the same 60/40 weighting. A 10-point difference means the engines weighted your evidence differently, not that one candidate is “10% more employable”. For the fair evaluation methodology, both engines always receive the exact same resume and job description text, the same skill taxonomy and the same weights.</p>
     </div>
   </div>
 </section>

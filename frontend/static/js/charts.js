@@ -1,12 +1,12 @@
-/* RxRevive chart helpers — Chart.js with the dark theme, used by several pages. */
+/* RxRevive chart helpers: Chart.js with the Ink theme, used by several pages. */
 (function () {
   "use strict";
 
   if (typeof Chart === "undefined") return;
 
-  Chart.defaults.color = "#9aa7b4";
-  Chart.defaults.borderColor = "rgba(255,255,255,0.09)";
-  Chart.defaults.font.family = '"Inter", "Segoe UI", system-ui, sans-serif';
+  Chart.defaults.color = "oklch(28% 0 0)";
+  Chart.defaults.borderColor = "oklch(89% 0.004 100)";
+  Chart.defaults.font.family = '"Epilogue", "Segoe UI", system-ui, sans-serif';
   Chart.defaults.plugins.legend.labels.boxWidth = 12;
 
   window.RxCharts = {
@@ -19,8 +19,8 @@
           labels: labels,
           datasets: [{
             data: data,
-            backgroundColor: colors || ["#14b8a6", "#f59e0b"],
-            borderColor: "rgba(11,15,20,0.9)",
+            backgroundColor: colors || ["oklch(50% 0.095 188)", "oklch(70% 0 0)"],
+            borderColor: "oklch(99.5% 0.003 100)",
             borderWidth: 2
           }]
         },

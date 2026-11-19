@@ -72,8 +72,7 @@
 
 {% macro feature_card(icon_name, title, text) %}
 <article class="feature-card">
-  <span class="feature-icon">{{ icon(icon_name) }}</span>
-  <h3>{{ title }}</h3>
+  <h3 class="card-title">{{ icon(icon_name) }} {{ title }}</h3>
   <p>{{ text }}</p>
 </article>
 {% endmacro %}

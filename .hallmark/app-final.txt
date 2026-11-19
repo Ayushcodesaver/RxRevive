@@ -1,0 +1,191 @@
+render tier: 135 screenshots in C:\Users\sharm\Downloads\NLPPROJECT\frontend\templates\.hallmark\shots (1280x800, 1440x900, 1920x1080 folds; 1440 and 375 full pages)
+frontend\templates\forgot_password.html
+  FAIL 4 :19 card nested in card: class="glass-card note-mini" | fix: Keep one containment layer
+  FAIL 26a :1 no :focus-visible styling anywhere | fix: A focus ring at 3:1 or better, instant
+  FAIL 34 :1 no overflow-x: clip on html and body | fix: overflow-x: clip on both html and body
+  REFLEX 26b :1 no :active styling anywhere | fix: All eight states; guard: not a form control, no aria-disabled anywhere
+  REFLEX 26b :1 no :disabled styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: input 21px, button.btn 21px | fix: Marketing controls stand 44 to 52px; app UI 32 to 40px with a 44px hit target
+  WARN 49 :15 long clickable label "{{ macros.icon('arrow') }} Request …" without nowrap | fix: Shorten the label or set nowrap
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %} {) | fix: Use typographic quotes: “ ” ’
+frontend\templates\404.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: a.btn 17px, a.btn 17px
+  WARN F1 :1 straight quote in prose x3 (first: {% extends "base.html" %} {)
+frontend\templates\_analyzer.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  FAIL 49a :1 [320px] control "{{ macros.icon('doc') }}Drag & d" wraps to 2 lines (div.dropzone) | fix: Shorten the label or set nowrap
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 26b :1 no :disabled styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: div.dropzone 18px, button.btn 21px, input 21px
+  WARN 49 :28 long clickable label "{{ macros.icon('spark') }} Load sam…" without nowrap
+  WARN 49 :51 long clickable label "{{ macros.icon('gauge') }} Analyze …" without nowrap
+frontend\templates\architecture.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  FAIL 34 :1 [320px] horizontal scroll: scrollWidth 405 > viewport 320 | fix: overflow-x: clip on html and body; find the overflowing block
+  FAIL 34 :1 [375px] horizontal scroll: scrollWidth 405 > viewport 375
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: a.btn 17px, a.btn 17px
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %})
+frontend\templates\base.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  FAIL 49a :1 [320px] control "Transformer (Sentence-BERT)" wraps to 2 lines (a)
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 26b :1 no :disabled styling anywhere
+  REFLEX 49b :1 [320px] link "Skip to content" wraps to 2 lines (a.skip-link) | fix: Shorten the label or set nowrap
+  WARN 49 :26 long clickable label "{{ macros.icon('menu') }}" without nowrap
+  WARN render :1 the shots show a fallback: fonts or stylesheets did not load (style.css')%20%7D%7D) | fix: Recapture when the host answers or the path is right; never review or sign off a fallback face
+frontend\templates\comparison.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  FAIL 34 :1 [320px] horizontal scroll: scrollWidth 418 > viewport 320
+  FAIL 34 :1 [375px] horizontal scroll: scrollWidth 418 > viewport 375
+  FAIL 34 :1 [414px] horizontal scroll: scrollWidth 418 > viewport 414
+  REFLEX 26b :1 no :active styling anywhere
+  WARN 46a :70 metric "10% more": verify the user supplied this number | fix: Confirm the metric or drop the slot
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %} {)
+frontend\templates\contact.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 26b :1 no :disabled styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: input 21px, input 21px, input 21px
+  WARN 49 :39 long clickable label "{{ macros.icon('arrow') }} Send Mes…" without nowrap
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %})
+  WARN F26 :1 [375px] h3 "{{ macros.icon('doc') }} Feedbac" ends on a stub | fix: text-wrap: balance on heads and pretty on body copy, or rewrite the line; a <br> goes only between phrases and is checked at 375
+frontend\templates\dashboard.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  FAIL 49a :1 [320px] control "{{ macros.icon('upload') }} Anal" wraps to 2 lines (a.btn.accent)
+  FAIL 49a :1 [320px] control "{{ macros.icon('scan') }} Tradit" wraps to 2 lines (a.btn.ghost-dark)
+  FAIL 49a :1 [320px] control "{{ macros.icon('brain') }} Trans" wraps to 2 lines (a.btn.ghost-dark)
+  FAIL 49a :1 [320px] control "{{ macros.icon('scale') }} Compa" wraps to 2 lines (a.btn.ghost-dark)
+  FAIL 49a :1 [375px] control "{{ macros.icon('doc') }} View Re" wraps to 2 lines (a.btn.ghost-dark)
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: a.btn 17px, a.btn 17px, a.btn 17px
+  WARN 49 :37 long clickable label "{{ macros.icon('upload') }} Analyze…" without nowrap
+  WARN 49 :38 long clickable label "{{ macros.icon('scan') }} Tradition…" without nowrap
+  WARN 49 :39 long clickable label "{{ macros.icon('brain') }} Transfor…" without nowrap
+  WARN 49 :40 long clickable label "{{ macros.icon('scale') }} Compare …" without nowrap
+  WARN 49 :41 long clickable label "{{ macros.icon('doc') }} View Repor…" without nowrap
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %} {)
+frontend\templates\dataset.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  FAIL 50 :61 display header word "macros.icon('upload')" with no overflow-wrap | fix: Add overflow-wrap: break-word and min-width: 0
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 26b :1 no :disabled styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: button.btn 21px
+  WARN 49 :65 long clickable label "{{ macros.icon('upload') }} Upload …" without nowrap
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %})
+  WARN F21 :69 h2 is followed by h4 ("Stored dataset structure") | fix: Step heading levels one at a time; size a head with CSS, never with its level
+frontend\templates\features.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  FAIL 49a :1 [375px] control "{{ macros.icon('scale') }} Compa" wraps to 2 lines (a.btn.ghost-dark)
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: a.btn 17px, a.btn 17px
+  WARN 49 :26 long clickable label "{{ macros.icon('upload') }} Analyze…" without nowrap
+  WARN 49 :27 long clickable label "{{ macros.icon('scale') }} Compare …" without nowrap
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %})
+frontend\templates\how_it_works.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  FAIL 49a :1 [320px] control "{{ macros.icon('layers') }} See " wraps to 2 lines (a.btn.ghost-dark)
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: a.btn 17px, a.btn 17px
+  WARN 49 :59 long clickable label "{{ macros.icon('upload') }} Start a…" without nowrap
+  WARN 49 :60 long clickable label "{{ macros.icon('layers') }} See the…" without nowrap
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %})
+frontend\templates\index.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  FAIL 34 :1 [320px] horizontal scroll: scrollWidth 2888 > viewport 320
+  FAIL 34 :1 [375px] horizontal scroll: scrollWidth 2888 > viewport 375
+  FAIL 34 :1 [414px] horizontal scroll: scrollWidth 2888 > viewport 414
+  FAIL 34 :1 [768px] horizontal scroll: scrollWidth 2888 > viewport 768
+  FAIL 34 :1 [1024px] horizontal scroll: scrollWidth 2888 > viewport 1024
+  FAIL 34 :1 [1280px] horizontal scroll: scrollWidth 2888 > viewport 1280
+  FAIL 34 :1 [1440px] horizontal scroll: scrollWidth 2888 > viewport 1440
+  FAIL 34 :1 [1920px] horizontal scroll: scrollWidth 2888 > viewport 1920
+  FAIL 49a :1 [320px] control "Read the ten-step pipeline" wraps to 2 lines (a.btn.quiet)
+  FAIL 76 :1 [1440px] an image that does not load: fountain-pen-writing-literacy-1920.jpg'), screen-analyze-desktop.png') }}, screen… | fix: Point it at a file that exists, make it a data-slot placeholder, or remove it
+  FAIL 76 :7 a library photo with no credit on the page (Petar Milošević, CC BY-SA 4.0) | fix: Add its printed credit to the footer's Photographs line (imagery.md § 2)
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 26b :1 no :disabled styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: a.btn 17px, a.btn 17px, a.btn 17px
+  WARN 49 :186 long clickable label "Read the ten-step pipeline" without nowrap
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %})
+  WARN F26 :1 [375px] h1 "One resume, read two ways." ends on a stub
+frontend\templates\login.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 26b :1 no :disabled styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: input 21px, input 21px, button.pw-toggle 21px
+  WARN 49 :24 long clickable label "{{ macros.icon('arrow') }} Log In" without nowrap
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %})
+frontend\templates\register.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 26b :1 no :disabled styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: input 21px, input 21px, input 21px
+  WARN 49 :27 long clickable label "{{ macros.icon('check') }} Create A…" without nowrap
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %} {)
+frontend\templates\reports.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  FAIL 34 :1 [320px] horizontal scroll: scrollWidth 466 > viewport 320
+  FAIL 34 :1 [375px] horizontal scroll: scrollWidth 466 > viewport 375
+  FAIL 34 :1 [414px] horizontal scroll: scrollWidth 466 > viewport 414
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 26b :1 no :disabled styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: input 21px, input 21px, input 21px
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %} {)
+frontend\templates\results.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  FAIL 49a :1 [320px] control "{{ macros.icon('download') }} Do" wraps to 2 lines (a.btn.accent)
+  FAIL 49a :1 [414px] control "View All Reports" wraps to 2 lines (a.btn.ghost-dark)
+  FAIL render :1 a script threw on load: Unexpected token '{' | fix: Fix the script; a page that throws ships half-working
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 26b :1 no :disabled styling anywhere
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: button.btn 21px, a.btn 17px, a.btn 17px
+  WARN 49 :153 long clickable label "{{ macros.icon('download') }} Downl…" without nowrap
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %})
+  WARN F21 :27 h1 is followed by h3 ("{{ label }}")
+  WARN F26 :1 [375px] h2 "{{ macros.icon('lock') }} Import" ends on a stub
+frontend\templates\traditional.html
+  FAIL 26a :1 no :focus-visible styling anywhere
+  FAIL 34 :1 no overflow-x: clip on html and body
+  REFLEX 26b :1 no :active styling anywhere
+  REFLEX 49b :1 [320px] link "The Transformer engine {{ macros" wraps to 2 lines (a.text-link)
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %})
+  WARN F26 :1 [375px] h3 "{{ macros.icon('target') }} What" ends on a stub
+frontend\templates\about.html
+  FAIL 34 :1 no overflow-x: clip on html and body
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %})
+  WARN F26 :1 [375px] h3 "{{ macros.icon('doc') }} The pro" ends on a stub; h3 "{{ macros.icon('x') }} Why the m" ends on a stub; h3 …
+frontend\templates\analyze.html
+  FAIL 34 :1 no overflow-x: clip on html and body
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %} {)
+frontend\templates\macros.html
+  FAIL 34 :1 no overflow-x: clip on html and body
+  WARN F21 :76 h1 is followed by h3 ("{{ title }}")
+frontend\templates\transformer.html
+  FAIL 34 :1 no overflow-x: clip on html and body
+  WARN F1 :1 straight quote in prose x2 (first: {% extends "base.html" %})
+  WARN F26 :1 [375px] h2 "How the Transformer engine works" ends on a stub; h3 "{{ macros.icon('settings') }} Mo" ends on a stub; h3 …
+http://127.0.0.1:5000/analyze
+  REFLEX 39b :1 [1440px] control height outside 32 to 52px: div.dropzone 180px
+http://127.0.0.1:5000/comparison
+  WARN F25 :1 [375px] a table opens with 4 columns off-screen (from "Difference") | fix: Keep the column that names the row and the one that acts on it in view: restack each row, or pin the first column
+http://127.0.0.1:5000/reports
+  WARN F25 :1 [375px] a table opens with 3 columns off-screen (from "Transformer")
+sloplint: 71 FAIL, 44 REFLEX, 50 WARN across 21 file(s) and 6 URL(s).

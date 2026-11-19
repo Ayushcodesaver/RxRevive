@@ -3,7 +3,7 @@
 {% block title %}Resume Analysis · RxRevive{% endblock %}
 
 {% block content %}
-{{ macros.page_header('Resume Analysis', 'Upload your resume, paste the job description, choose an NLP model — and get a complete suitability analysis powered by real NLP.') }}
+{{ macros.page_header('Resume Analysis', 'Upload a resume, paste the job description, pick an engine. Every score is computed live by the real NLP code.') }}
 
 <section class="section">
   <div class="container">
@@ -11,8 +11,8 @@
 
     <div class="analyzer-notes">
       <article class="note-card">{{ macros.icon('shield') }}<div><h3>Privacy</h3><p>Resume files are parsed in memory and never saved to disk; only the extracted text is stored with your analysis history.</p></div></article>
-      <article class="note-card">{{ macros.icon('clock') }}<div><h3>First Transformer run</h3><p>The Sentence-BERT model loads on first use (~90&nbsp;MB download once, then cached and offline).</p></div></article>
-      <article class="note-card">{{ macros.icon('lock') }}<div><h3>Honest scores</h3><p>Match scores are similarity suggestions for learning — never a probability of employment or an automated hiring decision.</p></div></article>
+      <article class="note-card">{{ macros.icon('clock') }}<div><h3>First Transformer run</h3><p>The Sentence-BERT model loads on first use, about 90 MB once, then cached and offline.</p></div></article>
+      <article class="note-card">{{ macros.icon('lock') }}<div><h3>Honest scores</h3><p>Match scores are similarity suggestions for learning, never a probability of employment or an automated hiring decision.</p></div></article>
     </div>
   </div>
 </section>

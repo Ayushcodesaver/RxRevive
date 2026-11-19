@@ -94,5 +94,5 @@ def api_forgot_password():
     db.session.commit()
     return ok({
         "message": "Your reset request has been recorded. Password reset emails are not "
-                   "configured in this academic demo — contact the RxRevive team to reset your password."
+                   "configured in this academic demo; contact the RxRevive team to reset your password."
     })
