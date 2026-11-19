@@ -65,12 +65,12 @@
 | Integration | State | Remaining step |
 |---|---|---|
 | **Clerk** | ✅ CONFIGURED — dev keys in `web/.env.local`, issuer domain in `ai-backend/.env`; verified: `/dashboard` redirects guests to the Clerk sign-in | Production keys before a real deploy (`sk_test_` → `sk_live_`) |
-| **Convex** | ⚠️ HALF — deployment `polite-caiman-100` exists and `NEXT_PUBLIC_CONVEX_URL` is set; the **schema/functions are not pushed yet** | Run `npx convex dev` once from the repo root (opens the browser login for your Convex account) — it pushes `convex/` to the deployment and replaces the `_generated` shim |
+| **Convex** | ✅ LIVE — deployment `polite-caiman-100` has the schema and all functions pushed (verified: a contact message persisted through the Next API route) | Nothing; future function changes just need another `npx convex dev` |
 | **Object storage** | ❌ not configured | Fill the `OBJECT_STORAGE_*` variables; reports currently persist to `generated_reports/` |
 | **Redis** | ❌ not configured (evaluations run inline) | Set `REDIS_URL` and run `celery -A app.tasks.celery_app worker` |
 
-The Convex access token cannot be minted by the build (it needs a browser login), which is why the
-function push is the one remaining manual step for full persistence.
+The web app calls Convex through `anyApi` function references (web/lib/convex/generated.ts), so no
+generated code is needed inside web/ — after changing convex/ functions, just push with `npx convex dev`.
 
 Every unconfigured integration renders an explicit setup state in the UI — nothing pretends to be connected.
 
