@@ -60,14 +60,17 @@
 
 ---
 
-## Pending integrations (need YOUR credentials — the code is ready)
+## Integration status (local environment)
 
-| Integration | What you must do | Affected |
+| Integration | State | Remaining step |
 |---|---|---|
-| **Clerk** | Create an app at dashboard.clerk.com → copy `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` + `CLERK_SECRET_KEY` into `web/.env.local`; set `CLERK_JWT_ISSUER_DOMAIN` in the backend env | Sign up/in, protected dashboard routes, profile management |
-| **Convex** | `cd convex` (project root) → `npx convex dev` (opens browser login) → set `NEXT_PUBLIC_CONVEX_URL` in `web/.env.local` | Analysis history, reports records, dataset/evaluation persistence, contact storage |
-| **Object storage** | Fill the `OBJECT_STORAGE_*` variables; wire the storage module (currently reports persist to `generated_reports/`) | Off-site report/dataset files |
-| **Redis** | Set `REDIS_URL`; run `celery -A app.tasks.celery_app worker` | Queued dataset evaluations (evaluations currently run inline) |
+| **Clerk** | ✅ CONFIGURED — dev keys in `web/.env.local`, issuer domain in `ai-backend/.env`; verified: `/dashboard` redirects guests to the Clerk sign-in | Production keys before a real deploy (`sk_test_` → `sk_live_`) |
+| **Convex** | ⚠️ HALF — deployment `polite-caiman-100` exists and `NEXT_PUBLIC_CONVEX_URL` is set; the **schema/functions are not pushed yet** | Run `npx convex dev` once from the repo root (opens the browser login for your Convex account) — it pushes `convex/` to the deployment and replaces the `_generated` shim |
+| **Object storage** | ❌ not configured | Fill the `OBJECT_STORAGE_*` variables; reports currently persist to `generated_reports/` |
+| **Redis** | ❌ not configured (evaluations run inline) | Set `REDIS_URL` and run `celery -A app.tasks.celery_app worker` |
+
+The Convex access token cannot be minted by the build (it needs a browser login), which is why the
+function push is the one remaining manual step for full persistence.
 
 Every unconfigured integration renders an explicit setup state in the UI — nothing pretends to be connected.
 
