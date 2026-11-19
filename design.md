@@ -53,4 +53,4 @@ scaffold's and live in `tokens.css`.
   two halves, 60–100 ms apart). Under reduced motion everything ends at once.
 
 ## Exports
-`frontend/static/css/tokens.css` in this project.
+`web/app/globals.css` (tokens + component system) in this project.

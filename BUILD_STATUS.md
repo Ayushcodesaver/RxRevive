@@ -2,7 +2,7 @@
 
 **Architecture**: Next.js 16 (web/) + Clerk + Convex (convex/) + Python FastAPI (ai-backend/)
 **Design**: the Hallmark Ink system is preserved verbatim (white paper, hueless black, Epilogue, hairlines, one teal that means in). Tokens live in `web/app/globals.css` and `design.md`.
-**Legacy**: the original Flask app (`backend/` + `frontend/`) is untouched and still runs with `python run.py`; it is the reference implementation.
+**Legacy Flask app**: removed (templates, Flask backend, `run.py`, SQLite db). All engine logic lives in `ai-backend/` and is covered by the pytest suite; the full history remains in git if ever needed.
 
 ---
 

@@ -1,7 +1,6 @@
 # RxRevive — Intelligent Resume and Job Description Matching System
 
-> **Monorepo (current):** Next.js 16 + Clerk + Convex + Python FastAPI — see [BUILD_STATUS.md](BUILD_STATUS.md) for the exact per-module state and setup steps.
-> **Legacy (still runnable):** the original Flask application (`python run.py`) — kept untouched as the reference implementation.
+> **Stack:** Next.js 16 + TypeScript + Clerk + Convex + Python FastAPI (PyTorch, Sentence-BERT, scikit-learn). See [BUILD_STATUS.md](BUILD_STATUS.md) for the per-module state and setup steps.
 
 Two independent NLP engines score a resume against a job description on identical inputs:
 
@@ -46,23 +45,11 @@ web/          Next.js 16 App Router (TypeScript, Tailwind, the Ink design)
 convex/       schema + functions (users, analyses, datasets, evaluations, experiments, contacts)
 ai-backend/   FastAPI service (both NLP engines, evaluation, metrics, ReportLab PDFs)
 datasets/     labelled CSV datasets for research evaluation
+generated_reports/   PDFs written by the FastAPI service
 ```
 
-## Legacy Flask app (reference implementation)
 
 
-```bash
-cd RxRevive
-pip install -r requirements.txt
-python run.py
-# → http://127.0.0.1:5000
-```
-
-The Transformer engine needs `sentence-transformers` + `torch` (in
-requirements.txt). The first analysis downloads the model (~90 MB, internet
-required once); afterwards it is cached and the app works offline. The app
-degrades gracefully — every Transformer feature shows an honest, informative
-message if the model is unavailable.
 
 ## Pages (15, fully connected)
 
@@ -70,49 +57,57 @@ Home · About · Features · How It Works · Traditional NLP · Transformer NLP 
 Dataset & Research · Model Comparison · Dashboard · Resume Analysis · Analysis
 Results · Reports · Contact · Login/Register/Forgot Password · Architecture.
 
-## API endpoints
+## API endpoints (FastAPI, /api/v1)
 
 ```
-GET    /api/health                     service + engine status
-POST   /api/resume/upload              extract resume text (PDF/DOCX/TXT)
-POST   /api/analyze/traditional        run the TF-IDF engine
-POST   /api/analyze/transformer        run the SBERT engine
-POST   /api/analyze/compare            run both on identical inputs
-GET    /api/reports                    history (search + model/score filters)
-GET    /api/reports/<id>               single analysis detail
-DELETE /api/reports/<id>               delete an owned analysis + its PDF
-GET    /reports/<id>/download          generate/download the PDF report
-GET    /api/dashboard/stats            real dashboard metrics
-GET    /api/comparison/data            real compare-mode experiment history
-POST   /api/auth/register|login|logout|forgot-password
-POST   /api/contact                    store a contact message
-POST   /api/dataset/upload             store a labelled CSV for research
+GET    /health                        service + engine status
+GET    /skills                        the shared skill taxonomy
+POST   /resumes/extract               extract resume text (PDF/DOCX/TXT)
+POST   /analyze/traditional           run the TF-IDF engine
+POST   /analyze/transformer           run the SBERT engine
+POST   /analyze/compare               run both on identical inputs
+POST   /datasets/validate             inspect and validate a labelled CSV
+POST   /evaluation/run                labelled evaluation of both engines
+POST   /reports/generate              render the ReportLab PDF
+GET    /reports/download/<filename>   download a generated report
+GET    /models/status                 model availability (via /health)
 ```
 
-All endpoints validate input, return structured JSON errors and never fabricate
-data. Metrics that need a labelled dataset (precision/recall/F1) display
-"Not evaluated yet" until Phase-6 evaluation is configured.
+Authentication: a Clerk JWT (verified against JWKS) or the service secret for
+server-to-server calls. All endpoints validate input, return a structured JSON
+envelope with request ids, and never fabricate data. Classification metrics
+appear only after a labelled dataset evaluation has actually been run.
+
+## API surface (Next.js, /api)
+
+```
+POST   /api/analyze/<engine>          Clerk auth -> Convex record -> FastAPI
+POST   /api/resumes/extract           upload proxy (secret stays server-side)
+POST   /api/contact                   persists to Convex
+POST   /api/datasets/validate         validation proxy
+POST   /api/evaluation/run            evaluation proxy (+ persistence)
+POST   /api/reports/generate          PDF proxy
+GET    /api/reports/download/<file>   PDF streaming proxy
+POST   /api/analyses/remove           owned-analysis delete
+```
 
 ## Architecture
 
 ```
 RxRevive/
-├── run.py                  ← python run.py
-├── backend/
-│   ├── app.py              ← application factory, blueprints, error handlers
-│   ├── config.py           ← secrets, paths, upload policy
-│   ├── shared/             ← text_extraction · preprocessing · skill_extractor · analysis_helpers
-│   ├── traditional_nlp/    ← tfidf_model.py (TF-IDF + cosine)
-│   ├── transformer_nlp/    ← sentence_bert.py (SBERT, cached singleton)
-│   ├── reports/            ← report_generator.py (ReportLab PDF)
-│   ├── database/           ← SQLAlchemy models: User · Analysis · ReportFile · ContactMessage
-│   └── routes/             ← main · analysis · reports · authentication · dashboard
-├── frontend/
-│   ├── templates/          ← 17 Jinja2 templates (dark premium design system)
-│   └── static/             ← css · js (+ vendored Chart.js — works offline)
-├── datasets/               ← labelled CSV datasets for research experiments
-├── generated_reports/      ← generated PDFs
-└── uploads/                ← temp area (files are parsed in memory, never stored)
+├── web/                     ← Next.js 16 (Ink design, TypeScript, Tailwind)
+│   ├── app/(marketing)/     ← 10 public pages
+│   ├── app/(auth)/          ← Clerk sign-in / sign-up
+│   ├── app/(dashboard)/     ← 10 authenticated pages
+│   ├── app/api/             ← server routes proxying the AI service
+│   ├── components/          ← chrome, analyzer, dashboard, ui
+│   └── lib/                 ← api client, validation (zod), convex
+├── convex/                  ← schema + functions (ownership checked)
+├── ai-backend/              ← FastAPI: extraction, taxonomy, TF-IDF, SBERT,
+│                              evaluation + metrics, ReportLab reports, tests
+├── datasets/                ← labelled CSV datasets for research experiments
+├── generated_reports/       ← PDFs written by the FastAPI service
+└── uploads/                 ← temp area (files parsed in memory, never stored)
 ```
 
 ## Security

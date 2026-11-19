@@ -1,1 +1,0 @@
-"""RxRevive backend package."""
