@@ -32,7 +32,7 @@ export function AiSuggestions({
 
   async function draft() {
     setBusy(true);
-    setStatus({ text: "Gemini is drafting from your own resume content…", kind: "" });
+    setStatus({ text: "Gemini is drafting from your own resume content… this can take up to a couple of minutes when demand is high.", kind: "" });
     try {
       const response = await requestAssist({
         resume_text: resumeText,

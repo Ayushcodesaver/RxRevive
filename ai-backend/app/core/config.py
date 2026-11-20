@@ -45,8 +45,10 @@ class Settings(BaseSettings):
     # Key from https://aistudio.google.com/apikey . Without it the assist
     # endpoints report "not configured" honestly; nothing else changes.
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-flash-latest"
-    gemini_timeout_s: int = 90
+    gemini_model: str = "gemini-3.8-flash"
+    gemini_timeout_s: int = 180
+    gemini_attempts: int = 3
+    gemini_retry_backoff_s: int = 3
 
     # --- background processing (optional) -----------------------------------
     redis_url: str = ""

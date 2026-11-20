@@ -97,21 +97,28 @@ def call_gemini(prompt: str) -> dict:
     # the key travels in the header (required for the new AQ. key format,
     # and keeps it out of URLs and access logs)
     headers = {"x-goog-api-key": settings.gemini_api_key}
-    attempts = 2  # one retry for transient 503s (high-demand spikes)
+    # Gemini demand spikes cause transient read timeouts and 503s:
+    # retry with increasing backoff instead of failing the first attempt.
     response = None
-    for attempt in range(attempts):
+    last_problem = "no response"
+    for attempt in range(settings.gemini_attempts):
         try:
             response = httpx.post(url, json=body, headers=headers, timeout=settings.gemini_timeout_s)
         except httpx.HTTPError as exc:
-            raise AssistUnavailableError(f"Could not reach the Gemini API: {exc}") from exc
-        if response.status_code == 503 and attempt < attempts - 1:
-            time.sleep(2)
+            last_problem = f"connection issue: {exc}"
+            if attempt < settings.gemini_attempts - 1:
+                time.sleep(settings.gemini_retry_backoff_s * (attempt + 1))
             continue
+        if response.status_code == 503 and attempt < settings.gemini_attempts - 1:
+            last_problem = "high demand (503)"
+            time.sleep(settings.gemini_retry_backoff_s * (attempt + 1))
+            continue
+        last_problem = f"status {response.status_code}"
         break
 
     if response is None or response.status_code == 503:
         raise AssistUnavailableError(
-            "Gemini is under heavy demand right now. Try again in a minute."
+            f"Gemini is under heavy demand right now ({last_problem}). Try again in a minute."
         )
     if response.status_code == 400 and "API key not valid" in response.text:
         raise AssistUnavailableError("The Gemini API key was rejected. Check GEMINI_API_KEY.")
