@@ -19,12 +19,15 @@ Honesty rules, enforced by prompt and by the UI that renders the result:
 """
 
 import json
+import logging
 import time
 from datetime import datetime, timezone
 
 import httpx
 
 from ..core.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 
 class AssistUnavailableError(Exception):
@@ -140,6 +143,7 @@ def call_gemini(prompt: str) -> dict:
         except (KeyError, IndexError, json.JSONDecodeError) as exc:
             raise AssistUnavailableError("Gemini returned an unexpected response shape.") from exc
 
+    logger.error("assist exhausted all models: %s", last_problem)
     raise AssistUnavailableError(
         f"Gemini is under heavy demand right now ({last_problem}). Try again in a minute."
     )

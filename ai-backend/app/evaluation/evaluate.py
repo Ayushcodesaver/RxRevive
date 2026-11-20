@@ -1,8 +1,14 @@
 """Genuine labelled evaluation of both NLP approaches.
 
-Both engines receive the SAME records and the SAME split. Similarity scores
-are converted into predictions with thresholds calibrated on the training
-split only (documented strategy; test labels are never used for calibration).
+Both engines receive the SAME records and the SAME split. Classification
+predictions come from thresholds calibrated on the training split only
+(test labels are never used for calibration). Two scoring variants are
+reported for each engine:
+
+- "similarity": raw document similarity (the single lexical/semantic signal)
+- "final": the product's own hybrid score 0.6 x similarity + 0.4 x skill
+  coverage — the same number the results page shows
+
 Similarity metrics and classification metrics are reported as distinct things.
 """
 
@@ -13,14 +19,15 @@ from ..shared.analysis_helpers import suitability_label
 from ..shared.skill_taxonomy import identify_skills
 from ..traditional_nlp.tfidf_model import analyze_traditional
 from ..transformer_nlp.model_manager import ModelUnavailableError, get_model, model_status
-from .metrics import band_thresholds, best_threshold, compute_metrics, to_bands
+from .metrics import band_thresholds, compute_metrics, to_bands
 
 ORDINAL_CLASS_ORDER = ["No Fit", "Potential Fit", "Good Fit"]
 
 
-def _similarity_only(resume_text: str, jd_text: str, engine: str) -> float:
-    """Similarity component (0..100) without the skill-coverage weighting,
-    used as the raw score that thresholds convert into class predictions."""
+def _documents_score(resume_text: str, jd_text: str, resume_skills: set, jd_skills: set,
+                     engine: str) -> dict:
+    """Per-record scores: raw similarity and the hybrid final score (0-100)."""
+    settings = __import__("app.core.config", fromlist=["get_settings"]).get_settings()
     if engine == "traditional":
         from sklearn.feature_extraction.text import TfidfVectorizer
         from sklearn.metrics.pairwise import cosine_similarity
@@ -31,40 +38,48 @@ def _similarity_only(resume_text: str, jd_text: str, engine: str) -> float:
         vectorizer = TfidfVectorizer(stop_words="english", ngram_range=(1, 2), max_features=8000, sublinear_tf=True)
         matrix = vectorizer.fit_transform(cleaned)
         value = float(cosine_similarity(matrix[0], matrix[1])[0][0])
-        return round(max(0.0, min(1.0, value)) * 100, 1)
-    if engine == "transformer":
+        similarity = round(max(0.0, min(1.0, value)) * 100, 1)
+    elif engine == "transformer":
         from ..transformer_nlp.sentence_bert import encode_documents
 
         embeddings = encode_documents([resume_text, jd_text])
         from ..transformer_nlp.semantic_similarity import aggregate_similarity
 
-        return round(aggregate_similarity(embeddings[0], embeddings[1]) * 100, 1)
-    raise ValueError(f"Unknown engine: {engine}")
+        similarity = round(aggregate_similarity(embeddings[0], embeddings[1]) * 100, 1)
+    else:
+        raise ValueError(f"Unknown engine: {engine}")
+
+    jd_list = sorted(jd_skills)
+    matched = [s for s in jd_list if s in resume_skills]
+    skill_pct = round(len(matched) / len(jd_list) * 100, 1) if jd_list else 0.0
+    final = round(settings.score_weight_similarity * similarity
+                  + settings.score_weight_skills * skill_pct, 1)
+    return {"similarity": similarity, "final": final, "skill_pct": skill_pct}
 
 
-def _predict_classes(scores: list[float], y_train_labels: list[str], y_test_labels: list[str],
-                     n_train: int, class_order: list[str]) -> tuple[list[str], dict]:
+def _predict_classes(scores_train: list[float], labels_train: list[str],
+                     scores_test: list[float], class_order: list[str]) -> tuple[list[str], dict]:
     """Threshold calibration on TRAIN labels; prediction over TEST."""
     config: dict = {}
-    train_scores, test_scores = scores[:n_train], scores[n_train:]
-
     if len(class_order) == 2:
+        from .metrics import best_threshold
+
         positive = class_order[-1]
-        threshold = best_threshold(y_train_labels, train_scores, positive)
+        threshold = best_threshold(labels_train, scores_train, positive)
         config["strategy"] = "binary threshold calibrated on the training split (max F1)"
         config["threshold"] = threshold
         config["positive_class"] = positive
-        preds = ["Good Fit" if s >= threshold else "No Fit" for s in test_scores]
-        # map to the dataset's own binary classes
-        preds = [positive if p == "Good Fit" else class_order[0] for p in preds]
+        preds = []
+        for s in scores_test:
+            # map the two real classes onto the score order
+            preds.append(positive if s >= threshold else class_order[0])
         return preds, config
 
-    cuts = band_thresholds(y_train_labels, train_scores, class_order)
+    cuts = band_thresholds(labels_train, scores_train, class_order)
     config["strategy"] = "ordinal class bands calibrated on the training split (greedy macro-F1)"
     config["cuts"] = cuts
     config["class_order"] = class_order
-    preds = to_bands(test_scores, cuts, class_order)
-    return preds, config
+    return to_bands(scores_test, cuts, class_order), config
 
 
 def evaluate_dataset(records: list[dict], engine: str, seed: int, split_ratio: float,
@@ -73,8 +88,8 @@ def evaluate_dataset(records: list[dict], engine: str, seed: int, split_ratio: f
 
     records: [{'resume': str, 'job_description': str, 'label': str}, ...]
     engine: 'traditional' | 'transformer'
-    Both the train and test split are scored with the same engine; thresholds
-    come from the train split only.
+    Returns metric sets for BOTH scoring variants (similarity-only and the
+    hybrid final score), each calibrated on the train split only.
     """
     if engine not in ("traditional", "transformer"):
         raise ValueError("engine must be 'traditional' or 'transformer'")
@@ -96,11 +111,11 @@ def evaluate_dataset(records: list[dict], engine: str, seed: int, split_ratio: f
     rng.shuffle(shuffled)
 
     n_train = max(2, int(len(shuffled) * split_ratio))
-    # every class must appear in both splits for a fair evaluation
     train = shuffled[:n_train]
     test = shuffled[n_train:]
     train_labels = [r["label"] for r in train]
     test_labels = [r["label"] for r in test]
+    stratified = True
     if len(set(test_labels)) < len(class_order):
         # fall back to a stratified split so every class is represented
         by_class: dict[str, list[dict]] = {}
@@ -118,31 +133,46 @@ def evaluate_dataset(records: list[dict], engine: str, seed: int, split_ratio: f
         n_train = len(train)
 
     started = time.perf_counter()
-    scores: list[float] = []
-    for record in train + test:
-        scores.append(_similarity_only(record["resume"], record["job_description"], engine))
+    scores = {"similarity": {"train": [], "test": []}, "final": {"train": [], "test": []}}
+    for split_name, split in (("train", train), ("test", test)):
+        for record in split:
+            resume_skills = identify_skills(record["resume"])["skills"]
+            jd_skills = identify_skills(record["job_description"])["skills"]
+            computed = _documents_score(record["resume"], record["job_description"],
+                                        resume_skills, jd_skills, engine)
+            scores["similarity"][split_name].append(computed["similarity"])
+            scores["final"][split_name].append(computed["final"])
     elapsed = round(time.perf_counter() - started, 2)
 
-    preds, threshold_config = _predict_classes(scores, train_labels, test_labels, n_train, class_order)
-    metrics = compute_metrics(test_labels, preds, y_score=scores[n_train:], labels=class_order)
+    results: dict = {}
+    for variant in ("similarity", "final"):
+        all_scores = scores[variant]["train"] + scores[variant]["test"]
+        preds, threshold_config = _predict_classes(
+            scores[variant]["train"], train_labels,
+            scores[variant]["test"], class_order,
+        )
+        results[variant] = {
+            "variant": variant,
+            "metrics": compute_metrics(test_labels, preds, y_score=all_scores[n_train:], labels=class_order),
+            "threshold_config": threshold_config,
+        }
 
     return {
         "engine": engine,
         "engine_name": "Traditional NLP (TF-IDF)" if engine == "traditional" else "Transformer NLP (Sentence-BERT)",
-        "threshold_config": threshold_config,
-        "metrics": metrics,
+        "results": results,
         "split": {
             "records": len(records),
             "train": n_train,
             "test": len(records) - n_train,
             "ratio": split_ratio,
             "seed": seed,
-            "stratified": True,
+            "stratified": stratified,
         },
         "notes": [
-            "Scores are similarity components; predictions come from thresholds calibrated on the training split only.",
-            "Both splits were scored with the same engine and the same records; no test label was used for calibration.",
-            "Similarity and classification metrics are reported as distinct things: a matching score is not an accuracy.",
+            "Two scoring variants: raw document similarity vs the product's hybrid final score (0.6 similarity + 0.4 skill coverage).",
+            "Thresholds/bands are calibrated on the training split only; no test label is used for calibration.",
+            "Similarity and classification metrics are distinct: a matching score is not an accuracy.",
         ],
         "computation_seconds": elapsed,
     }

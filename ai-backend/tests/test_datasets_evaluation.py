@@ -85,6 +85,9 @@ def test_evaluation_tfidf_end_to_end():
     ]
     result = evaluate_dataset(records, "traditional", seed=42, split_ratio=0.7)
     assert result["engine"] == "traditional"
-    assert result["metrics"]["evaluated_records"] >= 2
-    assert result["threshold_config"]["strategy"].startswith("binary threshold")
-    assert result["metrics"]["accuracy"] >= 0.5
+    metrics = result["results"]["similarity"]["metrics"]
+    assert metrics["evaluated_records"] >= 2
+    assert result["results"]["similarity"]["threshold_config"]["strategy"].startswith("binary threshold")
+    assert metrics["accuracy"] >= 0.5
+    # the hybrid final-score variant is reported alongside the similarity variant
+    assert "final" in result["results"]

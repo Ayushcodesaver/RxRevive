@@ -5,6 +5,7 @@ import time
 from fastapi import APIRouter, HTTPException
 
 from ..core.logging import get_logger
+from ..transformer_nlp.model_manager import ModelUnavailableError
 from ..evaluation.dataset_cleaner import clean
 from ..evaluation.dataset_loader import DatasetError, load_csv
 from ..evaluation.evaluate import compare_engines, evaluate_dataset
@@ -49,8 +50,10 @@ def run_evaluation(body: dict) -> Envelope:
             result = {engines[0]: evaluate_dataset(cleaned["records"], engines[0], seed, split_ratio, class_order)}
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    except Exception as exc:  # model load failure and the like
-        logger.error("evaluation failed: %s", exc)
+    except ModelUnavailableError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:  # unexpected failure: log with diagnostics
+        logger.exception("evaluation failed")
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 
     return Envelope(

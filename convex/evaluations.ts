@@ -13,9 +13,12 @@ export const create = mutation({
     engineName: v.string(),
   },
   handler: async (ctx, args) => {
-    const results = args.results as Record<string, { metrics?: Record<string, number | null> }>;
-    const single = results.traditional || results.transformer;
-    const metrics = single?.metrics ?? {};
+    // results now nest per-engine: { traditional: { results: { similarity: { metrics }, final: { metrics } } } }
+    const results = args.results as Record<string, {
+      results?: Record<string, { metrics?: Record<string, number | null> }>;
+    }>;
+    const single = results.traditional ?? results.transformer;
+    const metrics = single?.results?.similarity?.metrics ?? single?.results?.final?.metrics ?? {};
     return ctx.db.insert("evaluations", {
       clerkUserId: args.clerkUserId,
       datasetId: args.datasetId,

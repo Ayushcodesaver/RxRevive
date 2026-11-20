@@ -95,5 +95,5 @@ def test_evaluation_run_tfidf(client):
     response = client.post("/api/v1/evaluation/run", json={"dataset_content": "\n".join(rows), "engines": ["traditional"]})
     assert response.status_code == 200
     data = response.json()["data"]
-    assert data["results"]["traditional"]["metrics"]["accuracy"] >= 0.5
+    assert data["results"]["traditional"]["results"]["similarity"]["metrics"]["accuracy"] >= 0.5
     assert data["queued"] is False

@@ -24,9 +24,12 @@ interface ValidationReport {
   suggested_class_order: string[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface EvaluationResult {
-  results: Record<string, { engine_name: string; metrics: Record<string, unknown>; threshold_config: Record<string, unknown>; computation_seconds: number }>;
-  validation: Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  results: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  validation: Record<string, any>;
   execution: string;
 }
 

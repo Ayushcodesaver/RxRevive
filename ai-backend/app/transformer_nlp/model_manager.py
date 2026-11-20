@@ -60,6 +60,14 @@ def get_model():
             raise ModelUnavailableError(_MODEL_ERROR) from exc
 
 
+def reset_model() -> None:
+    """Clear the cached model (used by experiments to swap models)."""
+    global _MODEL, _MODEL_ERROR
+    with _LOCK:
+        _MODEL = None
+        _MODEL_ERROR = None
+
+
 def model_status() -> tuple[str, str, str | None]:
     """(status, message, model_name): 'ready' | 'unavailable' | 'not-loaded'."""
     settings = get_settings()
