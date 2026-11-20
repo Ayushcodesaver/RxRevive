@@ -78,17 +78,16 @@ content or marked with a placeholder. The summary must not claim experience the
 resume does not show."""
 
 
-def call_gemini(prompt: str) -> dict:
-    """Call the Gemini REST API (Google AI Studio key) and return parsed JSON."""
-    settings = get_settings()
-    if not settings.gemini_api_key:
-        raise AssistUnavailableError(
-            "GEMINI_API_KEY is not configured. Get a key at https://aistudio.google.com/apikey "
-            "and set it in the AI backend environment."
-        )
+# Demand concentrates on the headline model; these alternates usually have
+# capacity. Each is tried in order until one answers.
+FALLBACK_MODELS = ["gemini-3.8-flash", "gemini-3-flash-preview", "gemini-flash-latest"]
+
+
+def _generate(model: str, prompt: str) -> httpx.Response:
+    """One generation attempt against one model."""
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"{settings.gemini_model}:generateContent"
+        f"{model}:generateContent"
     )
     body = {
         "contents": [{"parts": [{"text": prompt}]}],
@@ -96,30 +95,54 @@ def call_gemini(prompt: str) -> dict:
     }
     # the key travels in the header (required for the new AQ. key format,
     # and keeps it out of URLs and access logs)
-    headers = {"x-goog-api-key": settings.gemini_api_key}
-    # Gemini demand spikes cause transient read timeouts and 503s:
-    # retry with increasing backoff instead of failing the first attempt.
-    response = None
-    last_problem = "no response"
-    for attempt in range(settings.gemini_attempts):
-        try:
-            response = httpx.post(url, json=body, headers=headers, timeout=settings.gemini_timeout_s)
-        except httpx.HTTPError as exc:
-            last_problem = f"connection issue: {exc}"
-            if attempt < settings.gemini_attempts - 1:
-                time.sleep(settings.gemini_retry_backoff_s * (attempt + 1))
-            continue
-        if response.status_code == 503 and attempt < settings.gemini_attempts - 1:
-            last_problem = "high demand (503)"
-            time.sleep(settings.gemini_retry_backoff_s * (attempt + 1))
-            continue
-        last_problem = f"status {response.status_code}"
-        break
+    headers = {"x-goog-api-key": get_settings().gemini_api_key}
+    return httpx.post(url, json=body, headers=headers, timeout=get_settings().gemini_timeout_s)
 
-    if response is None or response.status_code == 503:
+
+def call_gemini(prompt: str) -> dict:
+    """Call the Gemini REST API (Google AI Studio key) and return parsed JSON.
+
+    Tries the configured model first, then the fallback list, retrying
+    transient timeouts and 503s (high-demand spikes) along the way."""
+    settings = get_settings()
+    if not settings.gemini_api_key:
         raise AssistUnavailableError(
-            f"Gemini is under heavy demand right now ({last_problem}). Try again in a minute."
+            "GEMINI_API_KEY is not configured. Get a key at https://aistudio.google.com/apikey "
+            "and set it in the AI backend environment."
         )
+
+    # the configured model first, then fallbacks; ONE attempt each (90 s cap)
+    # so the worst case stays ~5 minutes instead of spiralling
+    models = [settings.gemini_model] + [m for m in FALLBACK_MODELS if m != settings.gemini_model]
+    last_problem = "no response"
+    for model in models:
+        try:
+            response = _generate(model, prompt)
+        except httpx.HTTPError as exc:
+            last_problem = f"{model}: connection issue ({exc})"
+            continue
+        if response.status_code == 404:
+            last_problem = f"{model}: not available (404)"
+            continue
+        if response.status_code == 503:
+            last_problem = f"{model}: high demand (503)"
+            continue
+        if response.status_code == 429:
+            last_problem = f"{model}: quota exceeded (429)"
+            continue
+        if response.status_code >= 400:
+            last_problem = f"{model}: status {response.status_code}"
+            continue
+        try:
+            payload = response.json()
+            text = payload["candidates"][0]["content"]["parts"][0]["text"]
+            return json.loads(text)
+        except (KeyError, IndexError, json.JSONDecodeError) as exc:
+            raise AssistUnavailableError("Gemini returned an unexpected response shape.") from exc
+
+    raise AssistUnavailableError(
+        f"Gemini is under heavy demand right now ({last_problem}). Try again in a minute."
+    )
     if response.status_code == 400 and "API key not valid" in response.text:
         raise AssistUnavailableError("The Gemini API key was rejected. Check GEMINI_API_KEY.")
     if response.status_code == 429:

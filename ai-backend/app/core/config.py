@@ -46,9 +46,9 @@ class Settings(BaseSettings):
     # endpoints report "not configured" honestly; nothing else changes.
     gemini_api_key: str = ""
     gemini_model: str = "gemini-3.8-flash"
-    gemini_timeout_s: int = 180
-    gemini_attempts: int = 3
-    gemini_retry_backoff_s: int = 3
+    gemini_timeout_s: int = 90
+    gemini_attempts: int = 1
+    gemini_retry_backoff_s: int = 2
 
     # --- background processing (optional) -----------------------------------
     redis_url: str = ""

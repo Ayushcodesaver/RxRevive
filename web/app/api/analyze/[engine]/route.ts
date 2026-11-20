@@ -51,9 +51,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ success: false, error: message }, { status: result.status });
   }
 
+  // unwrap the Python envelope: the client expects the analysis payload directly
+  const pythonEnvelope = result.body as { data?: Record<string, unknown>; metadata?: Record<string, unknown> };
+  const analysisPayload = (pythonEnvelope.data ?? {}) as Record<string, unknown>;
+
   // Persistence: Convex stores the analysis when configured. Without it the
   // result is returned unpersisted and the metadata says so honestly.
   let persisted = false;
+  let persistError: string | null = null;
   if (config.convexConfigured && userId) {
     try {
       const { persistAnalysis } = await import("@/lib/convex/persist");
@@ -66,23 +71,22 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           job_title: body.job_title || null,
           company: body.company || null,
         },
-        payload: result.body as Record<string, unknown>,
+        payload: analysisPayload,
       });
     } catch (error) {
-      console.error("convex persistence failed:", error);
+      persistError = error instanceof Error ? error.message : String(error);
+      console.error("convex persistence failed:", persistError);
     }
   }
-
-  // unwrap the Python envelope: the client expects the analysis payload directly
-  const pythonEnvelope = result.body as { data?: Record<string, unknown>; metadata?: Record<string, unknown> };
   return NextResponse.json({
     success: true,
-    data: pythonEnvelope.data ?? {},
+    data: analysisPayload,
     metadata: {
       processing_time_ms: Date.now() - started,
       model_name: pythonEnvelope.metadata?.model_name ?? null,
       persisted,
       identity_method: userId ? "clerk" : config.clerkConfigured ? "anonymous" : "auth_not_configured",
+      persist_error: persistError,
     },
   });
 }
