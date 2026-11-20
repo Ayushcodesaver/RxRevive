@@ -177,33 +177,40 @@ production keys (`pk_live_`/`sk_live_`) in Vercel + the issuer domain in Render.
 resume-job pair (0.6 x similarity + 0.4 x skill coverage), not accuracy. Accuracy comes from
 the labelled evaluation below.
 
-**Dataset:** Resume-Job Fit Dataset (Hugging Face, public), stratified sample via the
-datasets-server API, deduped for leakage: 129 evaluated rows (52 Good Fit / 48 Potential Fit /
-48... 29 Potential Fit), 3-class ordinal labels, identical splits for both engines,
-thresholds calibrated on the train split only.
+**Dataset:** Resume-Job Fit Dataset (Hugging Face, public), stratified sample fetched via the
+datasets-server API, deduped against leakage (the dataset reuses resumes across pairs):
+248 evaluated rows (112 Good Fit / 92 Potential Fit / 44 No Fit), identical 173/75 stratified
+splits for every engine, thresholds calibrated on the train split only. Test split: 75 rows.
 
-**Results (test split, 39 rows):**
+**Results (test split, 75 rows):**
 
 | Engine | Scoring variant | Accuracy | Precision (macro) | Recall (macro) | F1 (macro) |
 |---|---|---|---|---|---|
-| TF-IDF | similarity (baseline) | 35.9% | 0.449 | 0.360 | 0.343 |
-| TF-IDF | hybrid final score | 35.9% | 0.389 | 0.349 | 0.335 |
-| MiniLM | similarity (baseline) | **41.0%** | 0.422 | 0.413 | **0.391** |
-| MiniLM | hybrid final score | 35.9% | 0.362 | 0.359 | 0.360 |
+| TF-IDF | similarity (baseline) | 41.3% | 0.465 | 0.416 | 0.358 |
+| TF-IDF | hybrid final score | **44.0%** | 0.384 | 0.377 | 0.366 |
+| MiniLM (all-MiniLM-L6-v2) | similarity (baseline) | **49.3%** | 0.502 | 0.503 | **0.469** |
+| MiniLM | hybrid final score | 45.3% | 0.417 | 0.419 | 0.413 |
+| mpnet (all-mpnet-base-v2) | similarity (baseline) | 45.3% | 0.437 | 0.458 | 0.414 |
+| mpnet | hybrid final score | 42.7% | 0.416 | 0.405 | 0.383 |
 
 **Findings:**
-1. SBERT beats TF-IDF on identical splits (+5.1 pts accuracy, +0.048 macro-F1) — the semantic
+1. SBERT beats TF-IDF on identical splits (+8.0 pts accuracy, +0.111 macro-F1) — the semantic
    advantage claim is supported by real labelled evaluation.
-2. The hybrid final score does NOT improve classification on this dataset (honest negative
-   result): skill coverage barely discriminates these human-judgement labels, because resumes
-   with many skills still end up No Fit. The hybrid remains correct for the MATCH-SCORE feature;
-   it is simply not a better classifier.
-3. The dominant accuracy ceiling is DATA QUALITY, not the model: the dataset audit found
-   158 job descriptions carrying CONFLICTING labels across rows and 54 duplicates in the scan
-   (both recorded in the audit output). With 3 ordinal human-judgement classes and a ~39-row
-   test split, ±5 pts accuracy swings are noise. Larger labelled samples are the honest path
-   to higher measured accuracy.
+2. mpnet does NOT beat MiniLM here (45.3% vs 49.3%) — the honest result: the larger model is
+   not automatically better on this task; short resume documents + label noise favour the
+   lighter model. Model choice must be empirical, not assumption-based.
+3. The hybrid final score improves TF-IDF classification (+2.7 pts) but slightly hurts SBERT:
+   skill coverage adds orthogonal signal to the lexical engine, while SBERT already captures
+   it semantically.
+4. **The dominant ceiling is DATA QUALITY, not the model.** The dataset audit found 158 job
+   descriptions carrying CONFLICTING labels across rows, 54+ duplicate pairs, and label-block
+   ordering in the split. Chance level on this test set is 49% (majority class = 37/75), so the
+   best measured accuracy (49.3%) is AT CHANCE: with 3 ordinal human-judgement classes and
+   heavy label conflict, neither engine is yet a reliable CLASSIFIER on this dataset. They
+   remain solid MATCHING-score systems (their real purpose). Honest paths to better measured
+   accuracy: larger clean labelled samples, per-class label-consistency cleaning, and
+   (optionally) a properly trained supervised head on top of the embeddings.
 
 **Honesty rules enforced:** thresholds calibrated on the train split only; no test label used
 for calibration; similarity and classification metrics reported as distinct things; no metric
-invented.
+invented; at-chance results reported as at-chance.
