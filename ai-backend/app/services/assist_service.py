@@ -88,17 +88,31 @@ def call_gemini(prompt: str) -> dict:
         )
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"{settings.gemini_model}:generateContent?key={settings.gemini_api_key}"
+        f"{settings.gemini_model}:generateContent"
     )
     body = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {"responseMimeType": "application/json", "temperature": 0.4},
     }
-    try:
-        response = httpx.post(url, json=body, timeout=settings.gemini_timeout_s)
-    except httpx.HTTPError as exc:
-        raise AssistUnavailableError(f"Could not reach the Gemini API: {exc}") from exc
+    # the key travels in the header (required for the new AQ. key format,
+    # and keeps it out of URLs and access logs)
+    headers = {"x-goog-api-key": settings.gemini_api_key}
+    attempts = 2  # one retry for transient 503s (high-demand spikes)
+    response = None
+    for attempt in range(attempts):
+        try:
+            response = httpx.post(url, json=body, headers=headers, timeout=settings.gemini_timeout_s)
+        except httpx.HTTPError as exc:
+            raise AssistUnavailableError(f"Could not reach the Gemini API: {exc}") from exc
+        if response.status_code == 503 and attempt < attempts - 1:
+            time.sleep(2)
+            continue
+        break
 
+    if response is None or response.status_code == 503:
+        raise AssistUnavailableError(
+            "Gemini is under heavy demand right now. Try again in a minute."
+        )
     if response.status_code == 400 and "API key not valid" in response.text:
         raise AssistUnavailableError("The Gemini API key was rejected. Check GEMINI_API_KEY.")
     if response.status_code == 429:
