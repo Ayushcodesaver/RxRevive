@@ -112,3 +112,38 @@ export function scoreClass(score: number | null | undefined): "high" | "mid" | "
 export function modelLabel(key: string): string {
   return { traditional: "Traditional NLP", transformer: "Transformer NLP", compare: "Comparison" }[key] || key;
 }
+
+export interface AssistBullet {
+  missing_skill: string;
+  suggestion: string;
+  grounding: string;
+}
+
+export interface AssistPayload {
+  summary: string;
+  bullets: AssistBullet[];
+  keywords: string[];
+  cautions: string;
+  model: string;
+  generated_at: string;
+  processing_time: number;
+  disclaimer: string;
+}
+
+/** Ask Gemini (via the Python service) to draft resume improvements. */
+export async function requestAssist(input: {
+  resume_text: string;
+  job_description: string;
+  matched_skills: string[];
+  missing_skills: string[];
+  match_score: number;
+  similarity_pct: number;
+  skill_pct: number;
+}): Promise<Envelope<AssistPayload>> {
+  const response = await fetch("/api/assist", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  return unwrap<AssistPayload>(response);
+}

@@ -41,6 +41,13 @@ class Settings(BaseSettings):
     generated_reports_dir: str = "../generated_reports"
     datasets_dir: str = "../datasets/experiments"
 
+    # --- Gemini (Google AI Studio) resume assist ---------------------------
+    # Key from https://aistudio.google.com/apikey . Without it the assist
+    # endpoints report "not configured" honestly; nothing else changes.
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.0-flash"
+    gemini_timeout_s: int = 30
+
     # --- background processing (optional) -----------------------------------
     redis_url: str = ""
 

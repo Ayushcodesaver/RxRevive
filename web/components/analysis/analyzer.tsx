@@ -27,6 +27,7 @@ import { analyzeSchema, type AnalyzeInput } from "@/lib/validation/schemas";
 import { extractResume, runAnalysis, scoreClass, type AnalysisPayload, type EngineResult } from "@/lib/api/client";
 import { ScoreRing } from "./score-ring";
 import { MatchList } from "./match-list";
+import { AiSuggestions } from "./ai-suggestions";
 
 export function Analyzer({ defaultModel }: { defaultModel?: "traditional" | "transformer" | "compare" }) {
   const [model, setModel] = useState<AnalyzeInput["model"]>(defaultModel ?? "traditional");
@@ -34,6 +35,7 @@ export function Analyzer({ defaultModel }: { defaultModel?: "traditional" | "tra
   const [dragOver, setDragOver] = useState(false);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<AnalysisPayload | null>(null);
+  const [submitted, setSubmitted] = useState<{ resume: string; jd: string } | null>(null);
   const [status, setStatus] = useState<{ text: string; kind: "error" | "ok" | "" }>({ text: "", kind: "" });
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -80,6 +82,7 @@ export function Analyzer({ defaultModel }: { defaultModel?: "traditional" | "tra
         company: input.company || undefined,
       });
       setResult(response.data);
+      setSubmitted({ resume: input.resume_text, jd: input.job_description });
       setStatus({
         text: response.metadata?.persisted
           ? "Analysis complete and saved to your history."
@@ -204,12 +207,12 @@ export function Analyzer({ defaultModel }: { defaultModel?: "traditional" | "tra
         </form>
       </div>
 
-      {result ? <AnalysisResults payload={result} /> : null}
+      {result ? <AnalysisResults payload={result} resumeText={submitted?.resume ?? ""} jobDescription={submitted?.jd ?? ""} /> : null}
     </div>
   );
 }
 
-export function AnalysisResults({ payload }: { payload: AnalysisPayload }) {
+export function AnalysisResults({ payload, resumeText, jobDescription }: { payload: AnalysisPayload; resumeText: string; jobDescription: string }) {
   const primary = payload.transformer || payload.traditional;
   if (!primary) return null;
 
@@ -259,6 +262,16 @@ export function AnalysisResults({ payload }: { payload: AnalysisPayload }) {
           <li>{primary.education_alignment.message} <span className={`align-tag ${primary.education_alignment.status === "match" ? "match" : "gap"}`}>{primary.education_alignment.status}</span></li>
         </ul>
       </div>
+
+      <AiSuggestions
+        resumeText={resumeText}
+        jobDescription={jobDescription}
+        matchedSkills={primary.matched_skills}
+        missingSkills={primary.missing_skills}
+        matchScore={primary.match_percentage}
+        similarityPct={primary.cosine_percentage}
+        skillPct={primary.skill_percentage}
+      />
 
       <details className="engine-details well">
         <summary><Settings size={16} aria-hidden="true" /> Technical details: {primary.engine}</summary>

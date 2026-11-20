@@ -20,7 +20,8 @@
 | Experience/education alignment | ✅ complete | Ported from the Flask implementation |
 | Dataset loader + cleaner | ✅ complete | Column mapping, duplicates, missing values, honest reports |
 | Labelled evaluation + metrics | ✅ complete | Accuracy/precision/recall/F1 (macro/weighted), confusion matrix, ROC-AUC (binary), per-class report; thresholds calibrated on the TRAIN split only |
-| ReportLab PDF reports | ✅ complete | Bytes-based renderer, stored locally, traversal-safe download |
+| ReportLab PDF reports | ✅ complete |
+| Gemini resume assist (AI-drafted summary + bullets) | ✅ complete | REST via httpx, JSON mode, honest not-configured/quota errors; UI labelled AI-drafted with verify-first cautions | Bytes-based renderer, stored locally, traversal-safe download |
 | Clerk JWT verification | ✅ implemented | JWKS fetch + signature/issuer/audience/expiry checks (activates with `CLERK_JWT_ISSUER_DOMAIN`) |
 | Service-secret channel | ✅ implemented | `X-API-Secret` + `X-User-Id` from the Next.js server routes |
 | Celery/Redis background tasks | ✅ implemented | Optional; queues evaluation runs when `REDIS_URL` is set, inline otherwise |

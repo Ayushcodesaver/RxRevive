@@ -13,7 +13,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .api import analyze, datasets, evaluation, health, reports, resumes, skills
+from .api import analyze, assist, datasets, evaluation, health, reports, resumes, skills
 from .core.config import get_settings
 from .core.logging import new_request_id, request_id_var, setup_logging
 
@@ -66,6 +66,7 @@ def create_app() -> FastAPI:
     api_prefix = "/api/v1"
     app.include_router(health.router, prefix=api_prefix)
     app.include_router(skills.router, prefix=api_prefix)
+    app.include_router(assist.router, prefix=api_prefix)
     app.include_router(resumes.router, prefix=api_prefix)
     app.include_router(analyze.router, prefix=api_prefix)
     app.include_router(datasets.router, prefix=api_prefix)

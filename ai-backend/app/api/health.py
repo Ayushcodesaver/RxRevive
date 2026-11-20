@@ -29,5 +29,6 @@ def health() -> Envelope:
                 "clerk+service" if settings.python_api_secret else "clerk"
             ),
             "background_tasks": "celery+redis" if settings.redis_url else "inline (REDIS_URL not configured)",
+            "assist": "ready" if settings.gemini_api_key else "not-configured (set GEMINI_API_KEY)",
         },
     )
